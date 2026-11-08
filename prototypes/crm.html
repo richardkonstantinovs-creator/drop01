@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0E0E12">
+<title>Drop 01 Back Office</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,600..800&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0E0E12; --card:#15151B; --card2:#1B1B23; --line:rgba(243,241,236,.08); --line2:rgba(243,241,236,.14);
+  --ink:#F3F1EC; --ink2:rgba(243,241,236,.66); --ink3:rgba(243,241,236,.42);
+  --blue:#4A93F0; --orange:#D66E30; --good:#5BC98C; --warn:#E8B44A; --bad:#E5606A;
+  --holo:linear-gradient(100deg,#FFB3D9,#FFE7A3 30%,#B8FFD9 55%,#A8DCFF 78%,#D4B8FF);
+  --f-d:"Bricolage Grotesque","Arial Narrow",system-ui,sans-serif; --f-b:Manrope,system-ui,sans-serif; --f-m:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-b);font-size:15px;-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+.app{max-width:520px;margin:0 auto;padding:0 14px calc(100px + env(safe-area-inset-bottom,0px))}
+.mono{font-family:var(--f-m);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3)}
+.num{font-variant-numeric:tabular-nums}
+.sub{font-size:12px;color:var(--ink3)}
+
+/* header */
+.top{position:sticky;top:0;z-index:10;margin:0 -14px;padding:calc(10px + env(safe-area-inset-top,0px)) 14px 10px;background:rgba(14,14,18,.88);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;gap:10px}
+.mark{font-family:var(--f-d);font-variation-settings:"wdth" 78;font-weight:800;font-size:22px;letter-spacing:-.02em}
+.mark span{background:var(--holo);-webkit-background-clip:text;background-clip:text;color:transparent}
+.title{font-weight:700;font-size:15px;margin-left:2px;color:var(--ink2)}
+.icon-btn{margin-left:auto;width:36px;height:36px;border-radius:12px;border:1px solid var(--line2);background:var(--card);display:grid;place-items:center;position:relative}
+.icon-btn svg,.nav svg,.ic{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.icon-btn b{position:absolute;top:-4px;right:-4px;min-width:17px;height:17px;border-radius:9px;background:var(--bad);font-size:10px;display:grid;place-items:center;padding:0 4px}
+
+/* generic */
+.screen{display:none}
+.screen.on{display:block}
+section{margin-top:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px}
+.card h2{margin:0;font-size:15px;font-weight:700}
+.head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:12px}
+.hello{margin:18px 2px 0}
+.hello h1{font-family:var(--f-d);font-variation-settings:"wdth" 78;font-weight:800;font-size:34px;line-height:.95;letter-spacing:-.02em;margin:6px 0 0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kpi{padding:14px}
+.kpi .v{font-family:var(--f-d);font-variation-settings:"wdth" 78;font-weight:800;font-size:28px;letter-spacing:-.02em;margin:8px 0 4px;line-height:1}
+.delta{display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:700;padding:2px 7px;border-radius:99px}
+.up{color:var(--good);background:rgba(91,201,140,.12)} .down{color:var(--bad);background:rgba(229,96,106,.12)}
+.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:14px -14px 0;padding:0 14px}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1px solid var(--line2);background:var(--card);border-radius:99px;padding:7px 12px;font-size:13px;font-weight:600;color:var(--ink2)}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip i{font-style:normal;opacity:.6;margin-left:4px}
+.search{display:flex;gap:8px;margin-top:14px}
+.search input{flex:1;min-width:0;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 12px;outline:none}
+.btn{border:0;border-radius:12px;padding:10px 14px;font-weight:700;font-size:13px;background:var(--ink);color:var(--bg);white-space:nowrap}
+.btn.ghost{background:var(--card2);color:var(--ink);border:1px solid var(--line2)}
+.btn.sm{padding:7px 11px;font-size:12px;border-radius:10px}
+.row{display:flex;align-items:center;gap:10px}
+.list > *{border-top:1px solid var(--line)}
+.list > *:first-child{border-top:0}
+.hb{height:8px;border-radius:0 4px 4px 0;background:var(--blue)}
+.track{height:8px;border-radius:99px;background:var(--card2);overflow:hidden}
+.track i{display:block;height:100%;border-radius:99px;background:var(--blue)}
+
+/* status pills: always icon + label, colour is secondary */
+.st{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 8px;border-radius:99px;white-space:nowrap;background:var(--card2);color:var(--ink2);border:1px solid var(--line)}
+.st::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.st.new{color:#FFE7A3;background:rgba(255,231,163,.08)}
+.st.paid{color:#8DB9F5;background:rgba(74,147,240,.1)}
+.st.packing{color:var(--ink2)}
+.st.out{color:#E9A06E;background:rgba(214,110,48,.1)}
+.st.done{color:var(--good);background:rgba(91,201,140,.1)}
+.st.fail{color:var(--bad);background:rgba(229,96,106,.1)}
+.pay{font-family:var(--f-m);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+.pay.unpaid{color:var(--warn)}
+
+/* attention */
+.att{display:flex;align-items:center;gap:12px;padding:11px 0}
+.att .ico{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;flex:none}
+.att .ico.w{background:rgba(232,180,74,.12);color:var(--warn)} .att .ico.b{background:rgba(229,96,106,.12);color:var(--bad)} .att .ico.n{background:rgba(74,147,240,.12);color:var(--blue)}
+.att .t{flex:1;min-width:0;font-size:14px;font-weight:600}
+.att .t small{display:block;font-weight:500;font-size:12px;color:var(--ink3);margin-top:2px}
+.chev{color:var(--ink3)}
+
+/* bar chart */
+.bars{display:flex;align-items:flex-end;gap:8px;height:130px;padding-top:18px}
+.bars div{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end;position:relative}
+.bars i{display:block;width:100%;max-width:30px;border-radius:4px 4px 0 0;background:var(--blue);opacity:.55}
+.bars div.today i{opacity:1}
+.bars span{font-family:var(--f-m);font-size:10px;color:var(--ink3)}
+.bars em{position:absolute;font-style:normal;font-size:11px;font-weight:700;color:var(--ink);opacity:0}
+.bars div.today em,.bars div:hover em{opacity:1}
+
+/* money */
+.money{display:grid;grid-template-columns:1fr 1fr;gap:12px 10px}
+.money div{font-size:12px;color:var(--ink3)}
+.money b{display:block;font-size:19px;color:var(--ink);margin-top:3px}
+.money .profit b{background:var(--holo);-webkit-background-clip:text;background-clip:text;color:transparent;font-size:24px;font-family:var(--f-d);font-variation-settings:"wdth" 78;font-weight:800}
+
+/* windows */
+.win{padding:10px 0}
+.win .row{justify-content:space-between;font-size:13px;margin-bottom:7px}
+
+/* orders */
+.order{display:block;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:10px}
+.order .row{justify-content:space-between}
+.order .id{font-family:var(--f-m);font-size:12px;color:var(--ink3)}
+.order .who{font-weight:700;font-size:15px;margin:6px 0 2px}
+.order .meta{font-size:12px;color:var(--ink3)}
+.order .sum{font-weight:800;font-size:16px}
+.order .items{font-size:13px;color:var(--ink2);margin-top:8px;padding-top:8px;border-top:1px dashed var(--line2)}
+.fab{position:fixed;right:max(16px,calc(50% - 244px));bottom:calc(86px + env(safe-area-inset-bottom,0px));z-index:9;border:0;border-radius:16px;padding:14px 18px;font-weight:800;background:var(--holo);color:#121216;box-shadow:0 10px 30px rgba(0,0,0,.45)}
+
+/* delivery */
+.route-map{height:150px;border-radius:14px;background:radial-gradient(circle at 30% 40%,rgba(74,147,240,.08),transparent 60%),repeating-linear-gradient(0deg,transparent 0 23px,rgba(243,241,236,.04) 23px 24px),repeating-linear-gradient(90deg,transparent 0 23px,rgba(243,241,236,.04) 23px 24px),var(--card2);overflow:hidden;position:relative}
+.route-map svg{position:absolute;inset:0;width:100%;height:100%}
+.stop{display:grid;grid-template-columns:30px 1fr;gap:12px;padding:12px 0}
+.stop .n{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:13px;background:var(--card2);border:1px solid var(--line2)}
+.stop.done .n{background:rgba(91,201,140,.15);color:var(--good);border-color:transparent}
+.stop.done .addr{text-decoration:line-through;text-decoration-color:var(--ink3);color:var(--ink2)}
+.stop .addr{font-weight:700;font-size:14px}
+.stop .meta{font-size:12px;color:var(--ink3);margin:2px 0 8px}
+.stop .acts{display:flex;gap:6px;flex-wrap:wrap}
+.zones{display:flex;flex-wrap:wrap;gap:6px}
+.zone{font-size:12px;padding:6px 10px;border-radius:10px;background:var(--card2);border:1px solid var(--line)}
+.zone b{margin-left:4px}
+
+/* stock */
+.prod{display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center;padding:12px 0}
+.thumb{width:44px;height:44px;border-radius:12px;background:var(--holo);opacity:.85;display:grid;place-items:center;font-family:var(--f-d);font-weight:800;color:#121216;font-size:14px}
+.prod .n{font-weight:700;font-size:14px}
+.prod .m{font-size:12px;color:var(--ink3);margin-top:2px}
+.qty{text-align:right}
+.qty b{display:block;font-size:18px}
+.low{color:var(--warn);font-size:11px;font-weight:700}
+.out0{color:var(--bad);font-size:11px;font-weight:700}
+
+/* customers */
+.cust{display:grid;grid-template-columns:40px 1fr auto;gap:12px;align-items:center;padding:12px 0;width:100%;text-align:left;background:none;border:0;border-top:1px solid var(--line)}
+.av{width:40px;height:40px;border-radius:50%;background:var(--card2);display:grid;place-items:center;font-weight:700;color:var(--ink2)}
+.tag{font-family:var(--f-m);font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:2px 6px;border-radius:6px;background:rgba(255,231,163,.1);color:#FFE7A3;margin-left:6px;vertical-align:2px}
+
+/* sheet */
+.scrim{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .2s}
+.scrim.on{opacity:1;pointer-events:auto}
+.sheet{visibility:hidden;position:fixed;left:0;right:0;bottom:0;z-index:21;max-width:520px;margin:0 auto;max-height:88vh;overflow:auto;background:var(--card);border-radius:22px 22px 0 0;border-top:1px solid var(--line2);padding:10px 18px calc(22px + env(safe-area-inset-bottom,0px));transform:translateY(100%);transition:transform .28s cubic-bezier(.2,.8,.2,1),visibility 0s .28s}
+.sheet.on{transition:transform .28s cubic-bezier(.2,.8,.2,1)}
+.sheet.on{transform:none;visibility:visible}
+.grab{width:40px;height:4px;border-radius:2px;background:var(--line2);margin:0 auto 14px}
+.steps{display:flex;gap:4px;margin:14px 0 6px}
+.steps i{flex:1;height:4px;border-radius:2px;background:var(--card2)}
+.steps i.on{background:var(--blue)}
+.steps-l{display:flex;justify-content:space-between;font-size:10px;color:var(--ink3);font-family:var(--f-m);letter-spacing:.06em;text-transform:uppercase}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:8px 14px;font-size:13px;margin:14px 0}
+.kv dt{color:var(--ink3)} .kv dd{margin:0;text-align:right}
+.lines{margin:6px 0 0;font-size:14px}
+.lines .row{justify-content:space-between;padding:7px 0;border-top:1px solid var(--line)}
+.lines .row:first-child{border-top:0}
+.msg{font-size:13px;padding:8px 0 8px 14px;border-left:2px solid var(--line2);margin-left:4px;color:var(--ink2)}
+.msg b{color:var(--ink);font-weight:600}
+.acts2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
+.acts2 .btn{padding:13px}
+.acts2 .wide{grid-column:1/3;background:var(--holo);color:#121216}
+
+/* bottom nav */
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:10;display:flex;justify-content:center;padding:6px 8px calc(8px + env(safe-area-inset-bottom,0px));background:rgba(14,14,18,.92);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-top:1px solid var(--line)}
+.nav div{display:flex;width:100%;max-width:520px}
+.nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;border:0;background:none;color:var(--ink3);font-size:11px;font-weight:600;position:relative}
+.nav button.on{color:var(--ink)}
+.nav button em{position:absolute;top:2px;left:calc(50% + 6px);font-style:normal;font-size:9px;font-weight:800;background:var(--bad);color:#fff;border-radius:8px;padding:1px 5px}
+.foot{text-align:center;margin:22px 0 4px}
+.toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);z-index:30;background:var(--ink);color:var(--bg);font-weight:700;font-size:13px;padding:10px 16px;border-radius:12px;opacity:0;transition:.2s;pointer-events:none}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top"><div class="bar">
+    <div class="mark">DROP/<span>01</span></div><span class="title" id="scrTitle">Today</span>
+    <button class="icon-btn" aria-label="Notifications" onclick="go('home')"><svg viewBox="0 0 24 24"><path d="M6 9a6 6 0 0 1 12 0c0 6 2.5 7.5 2.5 7.5h-17S6 15 6 9M10 20a2.2 2.2 0 0 0 4 0"/></svg><b>4</b></button>
+  </div></header>
+
+  <!-- ============ HOME ============ -->
+  <div class="screen on" id="s-home">
+    <div class="hello"><div class="mono" id="dateLine"></div><h1>Good morning,<br>here’s your day.</h1></div>
+    <section class="grid2">
+      <div class="card kpi"><div class="mono">Sales today</div><div class="v num">€486</div><span class="delta up">▲ 18%</span> <span class="sub">vs. last Fri</span></div>
+      <div class="card kpi"><div class="mono">Orders today</div><div class="v num">14</div><span class="delta up">▲ 3</span> <span class="sub">vs. last Fri</span></div>
+      <div class="card kpi"><div class="mono">To deliver</div><div class="v num">11</div><span class="sub">5 done · 6 left</span></div>
+      <div class="card kpi"><div class="mono">Profit today</div><div class="v num">€171</div><span class="sub">35% margin</span></div>
+    </section>
+
+    <section class="card">
+      <div class="head"><h2>Needs your attention</h2><span class="sub">4 items</span></div>
+      <div class="list" id="attention"></div>
+    </section>
+
+    <section class="card">
+      <div class="head"><h2>Sales, last 7 days</h2><span class="sub num">€2,914 total</span></div>
+      <div class="bars" id="bars"></div>
+    </section>
+
+    <section class="card">
+      <div class="head"><h2>Delivery windows today</h2><button class="btn sm ghost" onclick="go('delivery')">Open route</button></div>
+      <div class="list" id="windows"></div>
+    </section>
+
+    <section class="card">
+      <div class="head"><h2>October so far</h2><span class="sub">1–9 Oct</span></div>
+      <div class="money">
+        <div>Revenue<b class="num">€8,240</b></div>
+        <div>Costs (stock, delivery, ads)<b class="num">€5,310</b></div>
+        <div class="profit">Profit<b class="num">€2,930</b></div>
+        <div>BTW to set aside<b class="num">€1,203</b></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="head"><h2>Best sellers this week</h2></div>
+      <div id="best"></div>
+    </section>
+  </div>
+
+  <!-- ============ ORDERS ============ -->
+  <div class="screen" id="s-orders">
+    <div class="search"><input id="oq" type="search" placeholder="Search order, name, street"></div>
+    <div class="chips" id="ofilters"></div>
+    <div id="orders"></div>
+  </div>
+
+  <!-- ============ DELIVERY ============ -->
+  <div class="screen" id="s-delivery">
+    <div class="chips" style="margin-top:14px"><button class="chip" aria-pressed="true">Today · Fri 9</button><button class="chip">Tomorrow · Sat 10</button><button class="chip">Sun 11</button></div>
+    <section class="card">
+      <div class="head"><h2>Route 18:00–21:00</h2><span class="sub num" id="routeProg"></span></div>
+      <div class="track" style="margin-bottom:12px"><i id="routeBar"></i></div>
+      <div class="route-map"><svg id="map" viewBox="0 0 340 150" preserveAspectRatio="xMidYMid meet"></svg></div>
+      <div class="row" style="justify-content:space-between;margin-top:10px"><span class="sub">≈ 23 km · 1 h 40 min · 1 courier</span><button class="btn sm ghost" onclick="toast('Route opened in Google Maps')">Open in Maps</button></div>
+    </section>
+    <section class="card">
+      <div class="head"><h2>Stops</h2><span class="sub">in driving order</span></div>
+      <div class="list" id="stops"></div>
+    </section>
+    <section class="card">
+      <div class="head"><h2>Zones this week</h2><span class="sub">orders</span></div>
+      <div class="zones" id="zones"></div>
+      <p class="sub" style="margin:12px 0 0">Free delivery from €35 in the city ring · €3.95 below · Haren & suburbs €5.95</p>
+    </section>
+  </div>
+
+  <!-- ============ STOCK ============ -->
+  <div class="screen" id="s-stock">
+    <section class="grid2">
+      <div class="card kpi"><div class="mono">Stock value</div><div class="v num">€6,480</div><span class="sub">at purchase price</span></div>
+      <div class="card kpi"><div class="mono">Running low</div><div class="v num" style="color:var(--warn)">3</div><span class="sub">1 sold out</span></div>
+    </section>
+    <div class="search"><input id="pq" type="search" placeholder="Search products"><button class="btn" onclick="toast('New product form')">+ Add</button></div>
+    <section class="card"><div class="list" id="prods"></div></section>
+    <section class="card">
+      <div class="head"><h2>Incoming from suppliers</h2></div>
+      <div class="list" id="pos"></div>
+    </section>
+  </div>
+
+  <!-- ============ CUSTOMERS ============ -->
+  <div class="screen" id="s-customers">
+    <div class="search"><input id="cq" type="search" placeholder="Search name, phone, email"></div>
+    <div class="chips" id="cfilters"></div>
+    <section class="card" style="padding-top:4px"><div id="custs"></div></section>
+  </div>
+
+  <p class="foot mono">Demo data · Groningen</p>
+</div>
+
+<button class="fab" id="fab" hidden onclick="toast('New order: pick customer → products → delivery window')">+ New order</button>
+
+<nav class="nav"><div>
+  <button data-s="home" class="on"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>Today</button>
+  <button data-s="orders"><svg viewBox="0 0 24 24"><path d="M6 3h12l1 18H5zM9 7a3 3 0 0 0 6 0"/></svg>Orders<em>3</em></button>
+  <button data-s="delivery"><svg viewBox="0 0 24 24"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17.5" cy="17.5" r="1.8"/></svg>Delivery</button>
+  <button data-s="stock"><svg viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9zM4 7.5l8 4.5 8-4.5M12 12v9"/></svg>Stock</button>
+  <button data-s="customers"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5M16 4.5a3.5 3.5 0 0 1 0 7M18.5 14.8c1.7.8 2.7 2.5 3 5.2"/></svg>Customers</button>
+</div></nav>
+
+<div class="scrim" id="scrim"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true"><div class="grab"></div><div id="sheetBody"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const eur = n => "€" + n.toFixed(2).replace(/\.00$/, "");
+const ICON = {
+  warn: '<svg class="ic" viewBox="0 0 24 24"><path d="M12 4l9 16H3zM12 10v4M12 17h.01"/></svg>',
+  card: '<svg class="ic" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg>',
+  box: '<svg class="ic" viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9zM4 7.5l8 4.5 8-4.5"/></svg>',
+  home: '<svg class="ic" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9H3zM9 21v-6h6v6"/></svg>',
+  chev: '<svg class="ic chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>',
+};
+
+/* ---------- fake data ---------- */
+const PRODUCTS = [
+  { id: "P1", name: "Item 01", v: "Black · M", price: 34.95, cost: 19.5, stock: 42, low: 10, sold: 31 },
+  { id: "P2", name: "Item 02", v: "Sand · One size", price: 24.95, cost: 11.2, stock: 6, low: 10, sold: 27 },
+  { id: "P3", name: "Item 03", v: "Holo edition", price: 49.0, cost: 28.0, stock: 18, low: 8, sold: 19 },
+  { id: "P4", name: "Item 04", v: "White · L", price: 19.95, cost: 8.9, stock: 0, low: 6, sold: 22 },
+  { id: "P5", name: "Item 05", v: "Gift box", price: 12.5, cost: 4.1, stock: 4, low: 12, sold: 14 },
+  { id: "P6", name: "Item 06", v: "Mini", price: 9.95, cost: 3.6, stock: 77, low: 20, sold: 9 },
+];
+const CUSTOMERS = [
+  ["Sanne de Vries", "Herestraat 41", "9711 LD", "Centrum", 9, 412.6, "2 days", "regular"],
+  ["Daan Bakker", "Paterswoldseweg 118", "9726 BL", "Helpman", 4, 168.3, "today", "regular"],
+  ["Lotte Mulder", "Zonnelaan 22", "9742 BD", "Paddepoel", 1, 34.95, "today", "new"],
+  ["Ruben Visser", "Korreweg 76", "9715 AH", "De Hoogte", 6, 254.1, "5 days", "regular"],
+  ["Emma Smit", "Oosterstraat 9", "9711 NN", "Centrum", 2, 74.9, "yesterday", "new"],
+  ["Jesse Meijer", "Vinkenstraat 3", "9741 AB", "Selwerd", 1, 24.95, "today", "new"],
+  ["Noor Hendriks", "Rijksstraatweg 210", "9752 CK", "Haren", 3, 139.8, "2 weeks", "regular"],
+  ["Milan de Boer", "Florakade 15", "9724 AA", "Oosterpoort", 1, 49.0, "6 weeks", "inactive"],
+  ["Yara Kok", "Siersteenlaan 40", "9743 ET", "Vinkhuizen", 2, 59.9, "today", "new"],
+  ["Thijs Jansen", "Wigboldstraat 12", "9741 GT", "Beijum", 5, 201.4, "3 weeks", "inactive"],
+  ["Fleur Peters", "Damsport 7", "9728 PR", "Corpus den Hoorn", 7, 318.0, "yesterday", "regular"],
+];
+const STATUS = { new: "New", paid: "Paid", packing: "Packing", out: "Out for delivery", done: "Delivered", fail: "Not home" };
+const FLOW = ["new", "paid", "packing", "out", "done"];
+const pickItems = (i) => [[PRODUCTS[i % 6], 1 + (i % 3 === 0)], ...(i % 2 ? [[PRODUCTS[(i + 2) % 6], 1]] : [])];
+const ORDERS = [
+  [1061, 2, "new", "unpaid", "18:00–21:00", "Tikkie"], [1060, 5, "new", "unpaid", "18:00–21:00", "Tikkie"], [1059, 8, "new", "iDEAL", "Tomorrow 12–15", "iDEAL"],
+  [1058, 1, "paid", "iDEAL", "18:00–21:00", "iDEAL"], [1057, 6, "paid", "iDEAL", "18:00–21:00", "iDEAL"], [1056, 10, "packing", "iDEAL", "18:00–21:00", "Card"],
+  [1055, 3, "out", "iDEAL", "15:00–18:00", "iDEAL"], [1054, 0, "out", "iDEAL", "15:00–18:00", "iDEAL"], [1053, 9, "fail", "iDEAL", "15:00–18:00", "iDEAL"],
+  [1052, 4, "done", "iDEAL", "12:00–15:00", "iDEAL"], [1051, 7, "done", "Card", "12:00–15:00", "Card"], [1050, 1, "done", "iDEAL", "12:00–15:00", "iDEAL"],
+].map(([id, c, st, paid, win, method], i) => {
+  const items = pickItems(i), sub = items.reduce((s, [p, q]) => s + p.price * q, 0), del = sub >= 35 ? 0 : CUSTOMERS[c][3] === "Haren" ? 5.95 : 3.95;
+  return { id, c: CUSTOMERS[c], st, paid: paid !== "unpaid", method, win, items, sub, del, total: sub + del, at: `${8 + i}:${String((i * 17) % 60).padStart(2, "0")}` };
+});
+
+/* ---------- navigation ---------- */
+const TITLES = { home: "Today", orders: "Orders", delivery: "Delivery", stock: "Stock", customers: "Customers" };
+function go(s){
+  document.querySelectorAll(".screen").forEach(x => x.classList.toggle("on", x.id === "s-" + s));
+  document.querySelectorAll(".nav button").forEach(b => b.classList.toggle("on", b.dataset.s === s));
+  $("scrTitle").textContent = TITLES[s]; $("fab").hidden = s !== "orders"; scrollTo(0, 0);
+}
+document.querySelectorAll(".nav button").forEach(b => b.onclick = () => go(b.dataset.s));
+function toast(t){ const el = $("toast"); el.textContent = t; el.classList.add("on"); clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove("on"), 1800); }
+function sheet(html){ $("sheetBody").innerHTML = html; $("scrim").classList.add("on"); $("sheet").classList.add("on"); }
+function closeSheet(){ $("scrim").classList.remove("on"); $("sheet").classList.remove("on"); }
+$("scrim").onclick = closeSheet;
+
+/* ---------- home ---------- */
+$("dateLine").textContent = new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
+const ATT = [
+  ["w", ICON.card, "2 orders not paid yet", "#1061, #1060 · Tikkie sent 40 min ago", () => { go("orders"); setFilter("new"); }],
+  ["b", ICON.home, "1 delivery failed — nobody home", "#1053 · Yara Kok, Vinkhuizen", () => openOrder(1053)],
+  ["w", ICON.box, "3 products running low", "Item 02 · Item 05 · Item 04 sold out", () => go("stock")],
+  ["n", ICON.warn, "Evening window almost full", "11 of 12 slots booked · 18:00–21:00", () => go("delivery")],
+];
+$("attention").innerHTML = ATT.map(([k, ic, t, s], i) => `<div class="att" data-i="${i}" role="button"><div class="ico ${k}">${ic}</div><div class="t">${t}<small>${s}</small></div>${ICON.chev}</div>`).join("");
+$("attention").querySelectorAll(".att").forEach(a => a.onclick = () => ATT[a.dataset.i][4]());
+const SALES = [["Sat", 512], ["Sun", 288], ["Mon", 301], ["Tue", 344], ["Wed", 421], ["Thu", 562], ["Fri", 486]];
+const mx = Math.max(...SALES.map(s => s[1]));
+$("bars").innerHTML = SALES.map(([d, v], i) => `<div class="${i === 6 ? "today" : ""}"><em style="bottom:calc(${v / mx * 100}% - 2px + 20px)">€${v}</em><i style="height:${v / mx * 100}%"></i><span>${d}</span></div>`).join("");
+$("windows").innerHTML = [["12:00–15:00", 7, 10, "done"], ["15:00–18:00", 6, 10, "on the road"], ["18:00–21:00", 11, 12, "next"]].map(([w, n, cap, s]) =>
+  `<div class="win"><div class="row"><span><b>${w}</b> <span class="sub">· ${s}</span></span><span class="num">${n} / ${cap}</span></div><div class="track"><i style="width:${n / cap * 100}%"></i></div></div>`).join("");
+$("best").innerHTML = [...PRODUCTS].sort((a, b) => b.sold - a.sold).slice(0, 4).map(p =>
+  `<div class="row" style="padding:7px 0;font-size:13px"><span style="width:70px">${p.name}</span><div style="flex:1"><div class="hb" style="width:${p.sold / 31 * 100}%"></div></div><span class="num" style="width:56px;text-align:right;color:var(--ink2)">${p.sold} sold</span></div>`).join("");
+
+/* ---------- orders ---------- */
+let ofilter = "all";
+function setFilter(f){ ofilter = f; renderOrders(); }
+function renderOrders(){
+  const counts = { all: ORDERS.length }; ORDERS.forEach(o => counts[o.st] = (counts[o.st] || 0) + 1);
+  $("ofilters").innerHTML = [["all", "All"], ...Object.entries(STATUS)].filter(([k]) => counts[k]).map(([k, l]) => `<button class="chip" data-f="${k}" aria-pressed="${k === ofilter}">${l}<i>${counts[k]}</i></button>`).join("");
+  $("ofilters").querySelectorAll(".chip").forEach(b => b.onclick = () => setFilter(b.dataset.f));
+  const q = $("oq").value.toLowerCase();
+  const rows = ORDERS.filter(o => (ofilter === "all" || o.st === ofilter) && (!q || ("#" + o.id + o.c[0] + o.c[1] + o.c[3]).toLowerCase().includes(q)));
+  $("orders").innerHTML = rows.map(o => `<button class="order" data-id="${o.id}">
+    <div class="row"><span class="id">#${o.id} · ${o.at}</span><span class="st ${o.st}">${STATUS[o.st]}</span></div>
+    <div class="row"><div><div class="who">${o.c[0]}</div><div class="meta">${o.c[3]} · ${o.win}</div></div><div style="text-align:right"><div class="sum num">${eur(o.total)}</div><div class="pay ${o.paid ? "" : "unpaid"}">${o.paid ? "Paid · " + o.method : "Awaiting " + o.method}</div></div></div>
+    <div class="items">${o.items.map(([p, q]) => `${q}× ${p.name}`).join(" · ")}</div></button>`).join("") || `<p class="sub" style="padding:20px 4px">No orders here.</p>`;
+  $("orders").querySelectorAll(".order").forEach(b => b.onclick = () => openOrder(+b.dataset.id));
+}
+$("oq").oninput = renderOrders;
+function openOrder(id){
+  const o = ORDERS.find(x => x.id === id), step = o.st === "fail" ? 3 : FLOW.indexOf(o.st);
+  const next = { new: o.paid ? "Mark as packing" : "Resend payment link", paid: "Start packing", packing: "Hand to courier", out: "Mark delivered", done: "Send invoice again", fail: "Reschedule delivery" }[o.st];
+  sheet(`<div class="row" style="justify-content:space-between"><span class="mono">Order #${o.id} · today ${o.at}</span><span class="st ${o.st}">${STATUS[o.st]}</span></div>
+    <div class="steps">${FLOW.map((_, i) => `<i class="${i <= step ? "on" : ""}"></i>`).join("")}</div>
+    <div class="steps-l"><span>New</span><span>Paid</span><span>Packed</span><span>Out</span><span>Delivered</span></div>
+    <h2 style="margin:18px 0 2px;font-size:20px">${o.c[0]}</h2><div class="sub">${o.c[1]}, ${o.c[2]} Groningen · ${o.c[3]}</div>
+    <dl class="kv"><dt>Delivery</dt><dd>${o.win}</dd><dt>Payment</dt><dd>${o.paid ? "✓ Paid with " + o.method : "⚠ Waiting · " + o.method + " link sent"}</dd><dt>Customer since</dt><dd>${o.c[4]} order${o.c[4] > 1 ? "s" : ""} · ${eur(o.c[5])} spent</dd></dl>
+    <div class="card" style="padding:12px 14px"><div class="lines">${o.items.map(([p, q]) => `<div class="row"><span>${q}× ${p.name} <span class="sub">${p.v}</span></span><span class="num">${eur(p.price * q)}</span></div>`).join("")}
+      <div class="row"><span class="sub">Delivery</span><span class="num">${o.del ? eur(o.del) : "Free"}</span></div>
+      <div class="row"><b>Total <span class="sub" style="font-weight:500">incl. ${eur(o.total - o.total / 1.21)} BTW</span></b><b class="num">${eur(o.total)}</b></div></div></div>
+    <div class="mono" style="margin:18px 0 8px">Messages sent automatically</div>
+    <div class="msg"><b>WhatsApp</b> · Order received, thanks ${o.c[0].split(" ")[0]}! ✓✓</div>
+    ${o.paid ? `<div class="msg"><b>Email</b> · Payment confirmed + invoice PDF</div>` : `<div class="msg"><b>WhatsApp</b> · Tikkie payment link</div>`}
+    ${step >= 3 ? `<div class="msg"><b>WhatsApp</b> · Courier is on the way, arriving ~19:10</div>` : ""}
+    <div class="acts2"><button class="btn wide" onclick="toast('${next} ✓');closeSheet()">${next}</button>
+      <button class="btn ghost" onclick="toast('Opening WhatsApp…')">WhatsApp</button><button class="btn ghost" onclick="toast('Calling ${o.c[0].split(" ")[0]}…')">Call</button></div>`);
+}
+
+/* ---------- delivery ---------- */
+const STOPS = [
+  [1050, "12:20", true], [1052, "12:45", true], [1051, "13:30", true], [1054, "16:10", true], [1055, "16:40", true],
+  [1058, "18:15", false], [1057, "18:40", false], [1056, "19:05", false], [1061, "19:30", false], [1060, "20:05", false], [1053, "20:30", false],
+];
+const PTS = [[40, 110], [70, 70], [110, 92], [150, 54], [175, 98], [205, 70], [235, 112], [262, 80], [290, 46], [312, 92], [322, 128]];
+function renderRoute(){
+  const done = STOPS.filter(s => s[2]).length;
+  $("routeProg").textContent = `${done} of ${STOPS.length} delivered`; $("routeBar").style.width = done / STOPS.length * 100 + "%";
+  $("map").innerHTML = `<path d="M${PTS.map(p => p.join(" ")).join("L")}" fill="none" stroke="rgba(74,147,240,.55)" stroke-width="2.5" stroke-linejoin="round" stroke-dasharray="1 0"/>` +
+    PTS.map((p, i) => `<circle cx="${p[0]}" cy="${p[1]}" r="${i === done ? 8 : 6}" fill="${STOPS[i][2] ? "#5BC98C" : i === done ? "#F3F1EC" : "#1B1B23"}" stroke="${STOPS[i][2] ? "none" : "#4A93F0"}" stroke-width="1.5"/>
+      <text x="${p[0]}" y="${p[1] + 3.5}" text-anchor="middle" font-size="8" font-weight="800" fill="${STOPS[i][2] || i === done ? "#121216" : "#F3F1EC"}" font-family="Manrope,sans-serif">${i + 1}</text>`).join("");
+  $("stops").innerHTML = STOPS.map(([id, eta, d], i) => { const o = ORDERS.find(x => x.id === id);
+    return `<div class="stop ${d ? "done" : ""}"><div class="n">${d ? "✓" : i + 1}</div><div><div class="addr">${o.c[1]}</div>
+      <div class="meta">${o.c[0]} · ${o.c[3]} · ${d ? "delivered " + eta : "ETA " + eta}${o.paid ? "" : " · <span style='color:var(--warn)'>collect payment</span>"}</div>
+      ${d ? "" : `<div class="acts"><button class="btn sm" data-done="${i}">Delivered</button><button class="btn sm ghost" onclick="toast('Navigating to ${o.c[1]}')">Navigate</button><button class="btn sm ghost" onclick="toast('Calling…')">Call</button><button class="btn sm ghost" onclick="toast('Marked: nobody home')">Not home</button></div>`}</div></div>`; }).join("");
+  $("stops").querySelectorAll("[data-done]").forEach(b => b.onclick = () => { STOPS[b.dataset.done][2] = true; toast("Delivered · customer notified"); renderRoute(); });
+}
+$("zones").innerHTML = [["Centrum", 14], ["Helpman", 9], ["Paddepoel", 8], ["De Hoogte", 6], ["Oosterpoort", 5], ["Selwerd", 5], ["Vinkhuizen", 4], ["Corpus den Hoorn", 4], ["Beijum", 3], ["Haren", 3]]
+  .map(([z, n]) => `<span class="zone">${z}<b class="num">${n}</b></span>`).join("");
+
+/* ---------- stock ---------- */
+function renderStock(){
+  const q = $("pq").value.toLowerCase();
+  $("prods").innerHTML = PRODUCTS.filter(p => !q || p.name.toLowerCase().includes(q)).map(p => { const m = Math.round((p.price - p.cost) / p.price * 100);
+    return `<div class="prod"><div class="thumb">${p.id.slice(1).padStart(2, "0")}</div><div><div class="n">${p.name}</div><div class="m">${p.v} · ${eur(p.price)} · ${m}% margin</div></div>
+      <div class="qty"><b class="num">${p.stock}</b>${p.stock === 0 ? `<span class="out0">✕ Sold out</span>` : p.stock <= p.low ? `<span class="low">▲ Low</span>` : `<span class="sub">in stock</span>`}</div></div>`; }).join("");
+}
+$("pq").oninput = renderStock;
+$("pos").innerHTML = [["Item 04 × 40", "Supplier A · Rotterdam", "arrives Tue 13 Oct", "€356"], ["Item 02 × 60", "Supplier B · Antwerp", "ordered · awaiting date", "€672"]]
+  .map(([a, b, c, d]) => `<div class="att"><div class="ico n">${ICON.box}</div><div class="t">${a}<small>${b} · ${c}</small></div><span class="num" style="font-weight:700">${d}</span></div>`).join("");
+
+/* ---------- customers ---------- */
+let cfilter = "all";
+function renderCustomers(){
+  const counts = { all: CUSTOMERS.length }; CUSTOMERS.forEach(c => counts[c[7]] = (counts[c[7]] || 0) + 1);
+  $("cfilters").innerHTML = [["all", "All"], ["regular", "Regulars"], ["new", "New"], ["inactive", "Inactive 30d+"]].map(([k, l]) => `<button class="chip" data-f="${k}" aria-pressed="${k === cfilter}">${l}<i>${counts[k]}</i></button>`).join("");
+  $("cfilters").querySelectorAll(".chip").forEach(b => b.onclick = () => { cfilter = b.dataset.f; renderCustomers(); });
+  const q = $("cq").value.toLowerCase();
+  $("custs").innerHTML = CUSTOMERS.map((c, i) => [c, i]).filter(([c]) => (cfilter === "all" || c[7] === cfilter) && (!q || c.join(" ").toLowerCase().includes(q))).map(([c, i]) =>
+    `<button class="cust" data-i="${i}"><div class="av">${c[0].split(" ").map(w => w[0].toUpperCase()).filter((_, k, a) => k === 0 || k === a.length - 1).join("").slice(0, 2)}</div>
+      <div><div style="font-weight:700;font-size:14px">${c[0]}${c[7] === "regular" ? '<span class="tag">Regular</span>' : c[7] === "new" ? '<span class="tag" style="background:rgba(74,147,240,.12);color:#8DB9F5">New</span>' : ""}</div>
+      <div class="sub" style="margin-top:2px">${c[3]} · last order ${c[6]}</div></div>
+      <div style="text-align:right"><div class="num" style="font-weight:700">${eur(c[5])}</div><div class="sub">${c[4]} order${c[4] > 1 ? "s" : ""}</div></div></button>`).join("");
+  $("custs").querySelectorAll(".cust").forEach(b => b.onclick = () => openCustomer(+b.dataset.i));
+}
+$("cq").oninput = renderCustomers;
+function openCustomer(i){
+  const c = CUSTOMERS[i], mine = ORDERS.filter(o => o.c === c);
+  sheet(`<div class="row"><div class="av" style="width:52px;height:52px;font-size:18px">${c[0].split(" ").map(w => w[0].toUpperCase()).filter((_, k, a) => k === 0 || k === a.length - 1).join("")}</div><div><h2 style="margin:0;font-size:20px">${c[0]}</h2><div class="sub">${c[1]}, ${c[2]} · ${c[3]}</div></div></div>
+    <div class="grid2" style="margin-top:16px"><div class="card kpi"><div class="mono">Spent</div><div class="v num">${eur(c[5])}</div></div><div class="card kpi"><div class="mono">Orders</div><div class="v num">${c[4]}</div><span class="sub">avg ${eur(c[5] / c[4])}</span></div></div>
+    <dl class="kv"><dt>Phone</dt><dd>+31 6 ${String(12345678 + i * 1111).replace(/(\d{2})(\d{3})(\d{3})/, "$1 $2 $3")}</dd><dt>Email</dt><dd>${c[0].split(" ")[0].toLowerCase()}@gmail.com</dd>
+      <dt>Came from</dt><dd>${["Instagram", "Waitlist", "TikTok", "Friend referral"][i % 4]}</dd><dt>Marketing consent</dt><dd>${i % 3 ? "✓ Yes · 2 Oct 2026" : "✕ No"}</dd></dl>
+    <div class="mono" style="margin:6px 0 8px">Recent orders</div>
+    ${mine.length ? mine.map(o => `<div class="row" style="justify-content:space-between;padding:8px 0;border-top:1px solid var(--line);font-size:13px"><span>#${o.id} · today</span><span class="st ${o.st}">${STATUS[o.st]}</span><span class="num">${eur(o.total)}</span></div>`).join("") : `<p class="sub">Older orders are in the full history.</p>`}
+    <div class="acts2"><button class="btn wide" onclick="toast('New order for ${c[0].split(" ")[0]}');closeSheet()">+ New order</button>
+      <button class="btn ghost" onclick="toast('Opening WhatsApp…')">WhatsApp</button><button class="btn ghost" onclick="toast('Discount code sent')">Send discount</button></div>`);
+}
+
+renderOrders(); renderRoute(); renderStock(); renderCustomers();
+</script>
+</body>
+</html>
