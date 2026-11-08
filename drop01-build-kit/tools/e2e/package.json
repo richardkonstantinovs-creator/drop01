@@ -1,0 +1,1 @@
+{ "name": "drop01-e2e", "private": true, "type": "module", "scripts": { "test": "node run.mjs" }, "devDependencies": { "playwright": "latest" } }

@@ -1,0 +1,58 @@
+# Drop 01 — Apache rules for cPanel shared hosting: HTTPS, pretty URLs, deny private files, security headers, gzip, caching.
+Options -Indexes -MultiViews
+DirectoryIndex index.php
+DirectorySlash Off
+ServerSignature Off
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # 1. Always HTTPS (skipped for local testing on localhost)
+  RewriteCond %{HTTPS} off
+  RewriteCond %{HTTP:X-Forwarded-Proto} !https
+  RewriteCond %{HTTP_HOST} !^(localhost|127\.0\.0\.1)(:\d+)?$ [NC]
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+  # 2. Never serve private folders, dotfiles (except .well-known for Apple Pay), databases, logs, docs, the used installer
+  RewriteRule ^(app|data|vendor|tools|tests|node_modules)(/|$) - [F,L,NC]
+  RewriteCond %{REQUEST_URI} !^/\.well-known/
+  RewriteRule (^|/)\. - [F,L]
+  RewriteRule \.(sqlite|sqlite3|db|log|md|sql|lock|ini|sh|bak|zip)$ - [F,L,NC]
+  RewriteRule ^install\.lock\.php$ - [F,L,NC]
+
+  # 3. Admin and API always go through the front controller
+  RewriteRule ^(admin|api)(/.*)?$ index.php [L,QSA]
+
+  # 4. Everything that is not a real file goes to the front controller
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteRule ^ index.php [L,QSA]
+</IfModule>
+
+<FilesMatch "(^\.|\.(sqlite|sqlite3|db|log|md|sql|lock|ini|sh|bak)$|^install\.lock\.php$)">
+  Require all denied
+</FilesMatch>
+
+<IfModule mod_headers.c>
+  Header setifempty X-Content-Type-Options "nosniff"
+  Header setifempty Referrer-Policy "strict-origin-when-cross-origin"
+  Header setifempty X-Frame-Options "SAMEORIGIN"
+  Header setifempty Permissions-Policy "camera=(self), microphone=(), geolocation=(), payment=(self)"
+  Header always set Strict-Transport-Security "max-age=31536000" env=HTTPS
+  # static files: fonts, css, js and photos are versioned or randomly named, so they can be cached for a year
+  <FilesMatch "\.(woff2|css|js|webp|jpe?g|png|gif|svg|ico)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  <FilesMatch "\.(webmanifest)$">
+    Header set Cache-Control "public, max-age=86400"
+  </FilesMatch>
+</IfModule>
+
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/plain application/javascript application/json image/svg+xml application/manifest+json
+</IfModule>
+
+<IfModule mod_mime.c>
+  AddType font/woff2 .woff2
+  AddType image/webp .webp
+  AddType application/manifest+json .webmanifest
+</IfModule>

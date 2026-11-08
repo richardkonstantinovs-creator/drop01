@@ -1,0 +1,8 @@
+.DS_Store
+drop01-build-kit/dist/
+drop01-build-kit/tools/cache/
+drop01-build-kit/tools/e2e/node_modules/
+drop01-build-kit/tools/e2e/shots/
+drop01-build-kit/tools/e2e/fixture.png
+drop01-build-kit/src/data/
+drop01-build-kit/src/uploads/products/

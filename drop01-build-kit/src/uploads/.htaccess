@@ -1,0 +1,12 @@
+# Uploaded photos only: no scripts can run here, no folder listings, only image files are served.
+Options -Indexes -ExecCGI
+Require all denied
+<FilesMatch "\.(webp|jpe?g|png|gif)$">
+  Require all granted
+</FilesMatch>
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+  Header set Content-Security-Policy "default-src 'none'"
+</IfModule>
+RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .php8 .phar .pl .py .cgi
+RemoveType .php .phtml .php3 .php4 .php5 .php7 .php8 .phar

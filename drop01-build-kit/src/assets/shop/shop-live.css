@@ -1,0 +1,35 @@
+/* Additions to the prototype styles for real data: product photos inside the art tiles, address fallback, form states. */
+[hidden]{display:none!important}
+.art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+.art.photo .shape,.art.photo .no{display:none}
+.art.photo .sold{z-index:1}
+.thumbs button{width:54px;aspect-ratio:1;border-radius:12px;padding:0;overflow:hidden;opacity:.5;border:2px solid transparent;background:var(--card2)}
+.thumbs button[aria-pressed="true"]{opacity:1;border-color:var(--ink)}
+.thumbs button img{width:100%;height:100%;object-fit:cover;display:block}
+.flyer.photo{background-size:cover;background-position:center}
+.addr input.field{margin-top:8px}
+.err{color:#FFB4AC;font-size:13px;margin:10px 0 0}
+.err:empty{display:none}
+.pay[disabled]{opacity:.45;cursor:not-allowed}
+.cta[disabled]{opacity:.6}
+.confirming{display:inline-flex;align-items:center;gap:8px}
+.confirming i{width:14px;height:14px;border-radius:50%;border:2px solid var(--line2);border-top-color:var(--ink);animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+footer a{color:inherit}
+:focus-visible{outline:2px solid #A8DCFF;outline-offset:2px}
+.nf{display:grid;gap:10px;padding:4px 0}
+/* checkout: discount or friend's code */
+#promo{margin-top:12px}
+#promo .pr-open{background:none;border:0;padding:6px 2px;color:var(--ink2);font-size:13px;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+#promo .pcrow{margin-top:0}
+#promo .pcrow .field{text-transform:uppercase;font-family:var(--f-m);letter-spacing:.08em}
+#promo .pr-on{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border:1.5px dashed rgba(91,201,140,.45);border-radius:12px;background:rgba(91,201,140,.07);color:var(--good);font-size:13.5px}
+#promo .pr-on b{font-size:13px;letter-spacing:.1em;color:var(--ink)}
+#promo .pr-x{background:none;border:0;color:var(--ink3);font-size:12.5px;font-weight:700;text-decoration:underline;padding:4px}
+/* order page: change the delivery window */
+#v-ok .mv-alert{background:rgba(232,180,74,.1);border:1px solid rgba(232,180,74,.35);color:var(--warn);border-radius:12px;padding:10px 12px;font-size:13.5px;font-weight:700;margin-bottom:14px}
+#v-ok .mv-day{margin:12px 0 8px}
+#v-ok .mv-pick .slots{grid-template-columns:1fr 1fr}
+#v-ok .mv-pick .cta[disabled]{opacity:.5}
+/* texts from Admin → Texts: **bold** in the stock line keeps the bright number */
+.stockbar .row b{color:var(--ink)}

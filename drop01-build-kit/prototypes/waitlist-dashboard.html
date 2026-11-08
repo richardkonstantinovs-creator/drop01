@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0E0E12">
+<title>Drop 01 Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,600..800&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0E0E12; --card:#15151B; --card2:#1B1B23; --line:rgba(243,241,236,.08); --line2:rgba(243,241,236,.14);
+  --ink:#F3F1EC; --ink2:rgba(243,241,236,.66); --ink3:rgba(243,241,236,.42);
+  --blue:#4A93F0; --orange:#D66E30;
+  --good:#5BC98C; --bad:#E5606A;
+  --holo:linear-gradient(100deg,#FFB3D9,#FFE7A3 30%,#B8FFD9 55%,#A8DCFF 78%,#D4B8FF);
+  --f-d:"Bricolage Grotesque","Arial Narrow",system-ui,sans-serif; --f-b:Manrope,system-ui,sans-serif; --f-m:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --r:18px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-b);font-size:15px;-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+.app{max-width:520px;margin:0 auto;padding:0 14px calc(96px + env(safe-area-inset-bottom,0px))}
+.mono{font-family:var(--f-m);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3)}
+.num{font-variant-numeric:tabular-nums}
+
+/* header */
+.top{position:sticky;top:0;z-index:10;margin:0 -14px;padding:calc(10px + env(safe-area-inset-top,0px)) 14px 10px;background:rgba(14,14,18,.86);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;gap:10px}
+.mark{font-family:var(--f-d);font-variation-settings:"wdth" 78;font-weight:800;font-size:22px;letter-spacing:-.02em}
+.mark span{background:var(--holo);-webkit-background-clip:text;background-clip:text;color:transparent}
+.pill{font-family:var(--f-m);font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:4px 8px;border-radius:99px;border:1px solid var(--line2);color:var(--ink2)}
+.live{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink2)}
+.live i{width:7px;height:7px;border-radius:50%;background:var(--good);box-shadow:0 0 0 3px rgba(91,201,140,.18)}
+.seg{display:flex;gap:4px;margin-top:10px;padding:3px;border-radius:12px;background:var(--card);border:1px solid var(--line)}
+.seg button{flex:1;border:0;background:none;padding:8px 0;border-radius:9px;font-size:13px;font-weight:600;color:var(--ink2);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--card2);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line2)}
+
+/* cards */
+section{margin-top:14px;scroll-margin-top:120px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.card h2{margin:0;font-size:15px;font-weight:700;letter-spacing:-.005em}
+.head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:14px}
+.sub{font-size:12px;color:var(--ink3)}
+
+/* hero */
+.hero{position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;background:var(--holo);opacity:.35;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.big{font-family:var(--f-d);font-variation-settings:"wdth" 78;font-weight:800;font-size:64px;line-height:.9;letter-spacing:-.03em;margin:6px 0 8px}
+.delta{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;padding:3px 8px;border-radius:99px}
+.delta.up{color:var(--good);background:rgba(91,201,140,.12)}
+.delta.down{color:var(--bad);background:rgba(229,96,106,.12)}
+.meter{margin-top:16px}
+.meter .row{display:flex;justify-content:space-between;font-size:12px;color:var(--ink2);margin-bottom:7px}
+.meter .row b{color:var(--ink)}
+.track{height:8px;border-radius:99px;background:var(--card2);overflow:hidden}
+.track i{display:block;height:100%;border-radius:99px;background:var(--holo)}
+.drop{display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.cd{font-family:var(--f-m);font-size:14px;letter-spacing:.04em}
+
+/* kpis */
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kpi{padding:14px}
+.kpi .v{font-family:var(--f-d);font-variation-settings:"wdth" 78;font-weight:800;font-size:30px;letter-spacing:-.02em;margin:8px 0 6px;line-height:1}
+.kpi .v small{font-size:16px;color:var(--ink2);margin-left:1px}
+
+/* chart */
+.tabs{display:flex;gap:6px}
+.tabs button{border:1px solid var(--line2);background:none;border-radius:99px;padding:5px 11px;font-size:12px;font-weight:600;color:var(--ink2);cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chart{position:relative;touch-action:pan-y}
+.chart svg{display:block;width:100%;height:180px;overflow:visible}
+.chart .grid line{stroke:var(--line)}
+.chart .ax text{fill:var(--ink3);font-family:var(--f-m);font-size:10px}
+.tip{position:absolute;top:0;pointer-events:none;background:var(--card2);border:1px solid var(--line2);border-radius:10px;padding:7px 10px;font-size:12px;white-space:nowrap;transform:translateX(-50%);opacity:0;transition:opacity .12s}
+.tip b{display:block;font-size:15px}
+.chart-total{display:flex;gap:16px;margin-bottom:10px}
+.chart-total div{font-size:12px;color:var(--ink3)}
+.chart-total b{display:block;color:var(--ink);font-size:18px;font-weight:700}
+
+/* funnel + bars */
+.fstep{padding:10px 0;border-top:1px solid var(--line)}
+.fstep:first-child{border-top:0;padding-top:0}
+.fstep .l{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;margin-bottom:7px}
+.fstep .l span:last-child{color:var(--ink2)}
+.fstep .l b{color:var(--ink)}
+.hb{height:10px;border-radius:0 4px 4px 0;background:var(--blue)}
+.lost{font-size:11px;color:var(--ink3);margin-top:6px}
+.lost em{font-style:normal;color:var(--bad)}
+.brow{display:grid;grid-template-columns:92px 1fr 44px;align-items:center;gap:10px;font-size:13px;padding:6px 0}
+.brow .hb{height:8px}
+.brow span:last-child{text-align:right;color:var(--ink2)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mini .brow{grid-template-columns:1fr 38px;gap:4px 8px}
+.mini .brow .hb{grid-column:1/3;order:3}
+
+/* products */
+.legend{display:flex;gap:12px;font-size:12px;color:var(--ink2)}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.prod{display:grid;grid-template-columns:48px 1fr;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.prod:first-of-type{border-top:0;padding-top:0}
+.thumb{width:48px;height:48px;border-radius:12px;background:var(--holo);opacity:.85;display:grid;place-items:center;font-family:var(--f-d);font-weight:800;color:#121216;font-size:15px}
+.prod .n{display:flex;justify-content:space-between;align-items:center;gap:8px;font-weight:700;font-size:14px}
+.badge{font-family:var(--f-m);font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:3px 7px;border-radius:99px;background:rgba(255,231,163,.12);color:#FFE7A3;white-space:nowrap}
+.split{display:flex;gap:2px;height:8px;margin:9px 0 6px}
+.split i{display:block;height:100%}
+.split i:first-child{background:var(--blue);border-radius:4px 0 0 4px}
+.split i:last-child{background:var(--orange);border-radius:0 4px 4px 0}
+.pv{display:flex;justify-content:space-between;font-size:12px;color:var(--ink2)}
+
+/* signups */
+.search{display:flex;gap:8px;margin-bottom:10px}
+.search input{flex:1;min-width:0;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;outline:none}
+.search input:focus{border-color:var(--line2)}
+.btn{border:0;border-radius:12px;padding:10px 14px;font-weight:700;font-size:13px;background:var(--ink);color:var(--bg);cursor:pointer;white-space:nowrap}
+.su{border-top:1px solid var(--line)}
+.su summary{list-style:none;display:grid;grid-template-columns:36px 1fr auto;gap:10px;align-items:center;padding:11px 0;cursor:pointer}
+.su summary::-webkit-details-marker{display:none}
+.av{width:36px;height:36px;border-radius:50%;background:var(--card2);display:grid;place-items:center;font-weight:700;font-size:13px;color:var(--ink2)}
+.su .e{font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.su .m{font-size:12px;color:var(--ink3);margin-top:2px}
+.su .t{font-size:12px;color:var(--ink3);text-align:right}
+.su dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0 0 12px 46px;font-size:13px}
+.su dt{color:var(--ink3)}
+.su dd{margin:0;font-family:var(--f-m);font-size:12px}
+.more{width:100%;margin-top:6px;background:var(--card2);color:var(--ink2);border:1px solid var(--line)}
+
+/* bottom nav */
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:10;display:flex;justify-content:center;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));background:rgba(14,14,18,.9);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-top:1px solid var(--line)}
+.nav div{display:flex;width:100%;max-width:520px}
+.nav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;text-decoration:none;color:var(--ink3);font-size:11px;font-weight:600}
+.nav a.on{color:var(--ink)}
+.nav svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.foot{text-align:center;margin:22px 0 4px}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="bar">
+      <div class="mark">DROP/<span>01</span></div>
+      <span class="pill">Admin</span>
+      <div class="live"><i></i><span id="live">7 on site now</span></div>
+    </div>
+    <div class="seg" role="group" aria-label="Time range">
+      <button data-r="1">Today</button><button data-r="7" aria-pressed="true">7 days</button><button data-r="30">30 days</button><button data-r="0">All</button>
+    </div>
+  </header>
+
+  <section id="overview">
+    <div class="card hero">
+      <div class="mono">On the waitlist</div>
+      <div class="big num" id="total">0</div>
+      <span class="delta up num" id="totalDelta">▲ +0</span> <span class="sub" id="totalSub">in the last 7 days</span>
+      <div class="meter">
+        <div class="row"><span>Free gifts claimed</span><span class="num"><b id="gClaimed">0</b> / 500</span></div>
+        <div class="track"><i id="gBar" style="width:0"></i></div>
+        <div class="row" style="margin:7px 0 0"><span id="gLeft"></span><span id="gEta"></span></div>
+      </div>
+      <div class="drop"><span class="mono">Drop goes live in</span><span class="cd num" id="cd">--</span></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="kpis" id="kpis"></div>
+  </section>
+
+  <section>
+    <div class="card">
+      <div class="head"><h2>Trend</h2>
+        <div class="tabs" role="group" aria-label="Metric"><button data-m="visits" aria-pressed="true">Visitors</button><button data-m="signups">Signups</button></div>
+      </div>
+      <div class="chart-total"><div><b class="num" id="ctTotal">0</b><span id="ctLabel">visitors</span></div><div><b class="num" id="ctAvg">0</b>per day</div><div><b class="num" id="ctPeak">0</b>best day</div></div>
+      <div class="chart" id="chart"><svg id="svg" role="img" aria-label="Trend chart"></svg><div class="tip" id="tip"></div></div>
+    </div>
+  </section>
+
+  <section id="funnel">
+    <div class="card">
+      <div class="head"><h2>Funnel</h2><span class="sub">where people drop off</span></div>
+      <div id="fun"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="card">
+      <div class="head"><h2>Traffic sources</h2><span class="sub">visitors</span></div>
+      <div id="src"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="two">
+      <div class="card mini"><div class="head"><h2>Devices</h2></div><div id="dev"></div></div>
+      <div class="card mini"><div class="head"><h2>Countries</h2></div><div id="geo"></div></div>
+    </div>
+  </section>
+
+  <section id="products">
+    <div class="card">
+      <div class="head"><h2>Product votes</h2><div class="legend"><span><i style="background:var(--blue)"></i>Likes</span><span><i style="background:var(--orange)"></i>Dislikes</span></div></div>
+      <div id="prods"></div>
+    </div>
+  </section>
+
+  <section id="signups">
+    <div class="card">
+      <div class="head"><h2>Signups</h2><span class="sub num" id="suCount"></span></div>
+      <div class="search"><input id="q" type="search" placeholder="Search email or phone" autocomplete="off"><button class="btn" id="csv">Export CSV</button></div>
+      <div id="list"></div>
+      <button class="btn more" id="moreBtn">Show more</button>
+    </div>
+  </section>
+
+  <p class="foot mono">Demo data · not connected yet</p>
+</div>
+
+<nav class="nav"><div>
+  <a href="#overview" class="on"><svg viewBox="0 0 24 24"><path d="M4 13h6V4H4zM14 20h6v-9h-6zM14 4h6v4h-6zM4 20h6v-3H4z"/></svg>Overview</a>
+  <a href="#funnel"><svg viewBox="0 0 24 24"><path d="M3 5h18l-7 8v6l-4 2v-8z"/></svg>Funnel</a>
+  <a href="#products"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.4-9.3-9C1.2 8.8 3.4 5 7 5c2 0 3.4 1.2 5 3 1.6-1.8 3-3 5-3 3.6 0 5.8 3.8 4.3 7-2.3 4.6-9.3 9-9.3 9z"/></svg>Products</a>
+  <a href="#signups"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5M16 4.5a3.5 3.5 0 0 1 0 7M18.5 14.8c1.7.8 2.7 2.5 3 5.2"/></svg>Signups</a>
+</div></nav>
+
+<script>
+/* ---------- fake data (seeded, so it looks the same every load) ---------- */
+let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+const DAYS = 30, today = new Date(); today.setHours(0, 0, 0, 0);
+const days = Array.from({ length: DAYS }, (_, i) => {
+  const d = new Date(today); d.setDate(d.getDate() - (DAYS - 1 - i));
+  const growth = 1 + i / 12, wk = [.85, 1, 1, 1.05, 1.15, 1.35, 1.25][d.getDay()];
+  const spike = i === 21 ? 2.6 : i === 22 ? 1.6 : 1;   // a TikTok that took off
+  const visits = Math.round((70 + rnd() * 40) * growth * wk * spike);
+  return { d, visits, signups: Math.round(visits * (.11 + rnd() * .05)) };
+});
+const SOURCES = [["Instagram", .38], ["TikTok", .27], ["Direct", .17], ["WhatsApp", .1], ["Google", .05], ["Other", .03]];
+const DEVICES = [["iPhone", .63], ["Android", .33], ["Desktop", .04]];
+const GEO = [["🇳🇱 Netherlands", .46], ["🇩🇪 Germany", .17], ["🇧🇪 Belgium", .12], ["🇬🇧 UK", .09], ["🇫🇷 France", .06]];
+const PRODUCTS = [
+  { name: "Item 01", qty: 120, likes: 505, dislikes: 61 },
+  { name: "Item 02", qty: 80, likes: 342, dislikes: 118 },
+  { name: "Item 03", qty: 200, likes: 611, dislikes: 44 },
+  { name: "Item 04", qty: 60, likes: 197, dislikes: 152 },
+];
+const NAMES = ["sofia", "liam", "emma", "noah", "mila", "daan", "julia", "sem", "tess", "lucas", "zoe", "finn", "nora", "levi", "eva", "milan", "sara", "bram", "lina", "jesse", "anna", "thijs", "yara", "luuk"];
+const DOMS = ["gmail.com", "icloud.com", "hotmail.com", "outlook.com", "gmail.com", "gmail.com"];
+const CC = [["🇳🇱", "+31 6"], ["🇳🇱", "+31 6"], ["🇳🇱", "+31 6"], ["🇩🇪", "+49 15"], ["🇧🇪", "+32 4"], ["🇬🇧", "+44 7"]];
+const signups = Array.from({ length: 86 }, (_, i) => {
+  const n = NAMES[(rnd() * NAMES.length) | 0], c = CC[(rnd() * CC.length) | 0];
+  const ago = Math.round(i * i * 9 + rnd() * 40 + 2);       // minutes
+  return { email: `${n}${rnd() < .5 ? "." + ((rnd() * 99) | 0) : ""}@${DOMS[(rnd() * DOMS.length) | 0]}`, flag: c[0],
+    phone: `${c[1]}${String((rnd() * 1e8) | 0).padStart(8, "0").replace(/(\d{2})(\d{3})(\d{3})/, " $1 $2 $3")}`,
+    ago, code: "D01-" + Math.random().toString(36).slice(2, 6).toUpperCase(), src: SOURCES[(rnd() * 4) | 0][0], dev: rnd() < .64 ? "iPhone" : "Android" };
+});
+const TOTAL_ALL = 1873, CLAIMED = 312;
+
+/* ---------- helpers ---------- */
+const $ = id => document.getElementById(id);
+const fmt = n => n.toLocaleString("en-US");
+const pct = (a, b) => b ? Math.round(a / b * 100) : 0;
+const ago = m => m < 60 ? m + "m ago" : m < 1440 ? Math.round(m / 60) + "h ago" : Math.round(m / 1440) + "d ago";
+const mask = e => { const [u, d] = e.split("@"); return u.slice(0, 2) + "•••" + u.slice(-1) + "@" + d; };
+function countUp(el, to, suffix = ""){
+  const from = parseFloat(el.dataset.v || 0); el.dataset.v = to; const t0 = performance.now();
+  (function f(t){ const k = Math.min(1, (t - t0) / 500), e = 1 - Math.pow(1 - k, 3);
+    el.textContent = fmt(Math.round(from + (to - from) * e)) + suffix; if (k < 1) requestAnimationFrame(f); })(t0);
+}
+
+/* ---------- render ---------- */
+let range = 7, metric = "visits", shown = 8;
+function slice(){ return range === 0 ? days : days.slice(-range); }
+function sum(arr, k){ return arr.reduce((s, d) => s + d[k], 0); }
+function prevSlice(){ return range === 0 || range === 30 ? null : days.slice(-range * 2, -range); }
+
+function renderOverview(){
+  const cur = slice(), su = sum(cur, "signups"), prev = prevSlice();
+  countUp($("total"), TOTAL_ALL);
+  $("totalDelta").textContent = "▲ +" + fmt(su);
+  $("totalSub").textContent = range === 1 ? "today" : range === 0 ? "since launch" : `in the last ${range} days`;
+  $("gClaimed").textContent = CLAIMED; $("gBar").style.width = CLAIMED / 5 + "%";
+  $("gLeft").textContent = (500 - CLAIMED) + " gifts left";
+  const perDay = sum(days.slice(-7), "signups") / 7 * .25;
+  $("gEta").textContent = "gone in ~" + Math.ceil((500 - CLAIMED) / perDay) + " days";
+
+  const v = sum(cur, "visits"), conv = v ? su / v * 100 : 0;
+  const pv = prev ? sum(prev, "visits") : null, ps = prev ? sum(prev, "signups") : null;
+  const tiles = [
+    ["Visitors", fmt(v), "", pv && (v - pv) / pv],
+    ["Conversion", conv.toFixed(1), "%", ps && (conv - ps / pv * 100) / (ps / pv * 100)],
+    ["Opened the pack", "81", "%", .03],
+    ["Avg. time on site", "1:48", "", -.04],
+  ];
+  $("kpis").innerHTML = tiles.map(([l, val, suf, d]) => `<div class="card kpi"><div class="mono">${l}</div><div class="v num">${val}<small>${suf}</small></div>${
+    d == null || !isFinite(d) ? `<span class="sub">vs. —</span>` : `<span class="delta ${d >= 0 ? "up" : "down"} num">${d >= 0 ? "▲" : "▼"} ${Math.abs(d * 100).toFixed(0)}%</span> <span class="sub">vs. prev.</span>`}</div>`).join("");
+
+  // funnel
+  const steps = [["Landed on the site", v], ["Opened the pack", Math.round(v * .81)], ["Typed an email", Math.round(v * .31)], ["Added a phone", Math.round(su * 1.18)], ["Joined the waitlist", su]];
+  $("fun").innerHTML = steps.map(([l, n], i) => `<div class="fstep"><div class="l"><span>${l}</span><span class="num"><b>${fmt(n)}</b> · ${pct(n, v)}%</span></div>
+    <div class="hb" style="width:${Math.max(2, pct(n, v))}%"></div>${i ? `<div class="lost num"><em>−${fmt(steps[i - 1][1] - n)}</em> lost here (${100 - pct(n, steps[i - 1][1])}%)</div>` : ""}</div>`).join("");
+
+  // sources, devices, countries
+  const bars = (rows, total, cls) => rows.map(([l, f]) => `<div class="brow"><span>${l}</span><div class="hb" style="width:${f / rows[0][1] * 100}%"></div><span class="num">${Math.round(f * 100)}%</span></div>`).join("");
+  $("src").innerHTML = bars(SOURCES);
+  $("dev").innerHTML = bars(DEVICES); $("geo").innerHTML = bars(GEO);
+}
+
+function renderProducts(){
+  const best = PRODUCTS.reduce((a, b) => (b.likes - b.dislikes > a.likes - a.dislikes ? b : a));
+  $("prods").innerHTML = PRODUCTS.map((p, i) => { const t = p.likes + p.dislikes, lp = pct(p.likes, t);
+    return `<div class="prod"><div class="thumb">0${i + 1}</div><div>
+      <div class="n"><span>${p.name} <span class="sub" style="font-weight:500">· ${p.qty} pcs</span></span>${p === best ? `<span class="badge">★ Most wanted</span>` : ""}</div>
+      <div class="split" role="img" aria-label="${p.likes} likes, ${p.dislikes} dislikes"><i style="width:${lp}%"></i><i style="width:${100 - lp}%"></i></div>
+      <div class="pv num"><span>♥ ${fmt(p.likes)} like it · ${lp}%</span><span>${fmt(p.dislikes)} not for me</span></div></div></div>`; }).join("");
+}
+
+function renderList(){
+  const q = $("q").value.trim().toLowerCase();
+  const rows = signups.filter(s => !q || s.email.includes(q) || s.phone.replace(/\s/g, "").includes(q.replace(/\s/g, "")));
+  $("suCount").textContent = fmt(TOTAL_ALL) + " total";
+  $("list").innerHTML = rows.slice(0, shown).map(s => `<details class="su"><summary>
+      <div class="av">${s.email[0].toUpperCase()}</div>
+      <div style="min-width:0"><div class="e">${mask(s.email)}</div><div class="m">${s.flag} ${s.phone.slice(0, 7)} ••• · ${s.src}</div></div>
+      <div class="t">${ago(s.ago)}</div></summary>
+      <dl><dt>Email</dt><dd>${s.email}</dd><dt>Phone</dt><dd>${s.phone}</dd><dt>Gift code</dt><dd>${s.code}</dd><dt>Source</dt><dd>${s.src}</dd><dt>Device</dt><dd>${s.dev}</dd></dl></details>`).join("")
+    || `<p class="sub" style="padding:12px 0">No one matches “${q}”.</p>`;
+  $("moreBtn").hidden = rows.length <= shown;
+}
+
+/* ---------- trend chart (single series, one axis, touch crosshair) ---------- */
+function renderChart(){
+  const data = range === 1 ? days.slice(-7) : slice();   // "Today" still shows the week for context
+  const vals = data.map(d => d[metric]), max = Math.max(...vals), niceMax = Math.ceil(max / (max > 200 ? 100 : 10)) * (max > 200 ? 100 : 10);
+  const svg = $("svg"), W = svg.clientWidth || 340, H = 180, padL = 30, padB = 22, padT = 8, iw = W - padL - 4, ih = H - padB - padT;
+  const x = i => padL + (data.length === 1 ? iw / 2 : i / (data.length - 1) * iw), y = v => padT + ih - v / niceMax * ih;
+  const pts = vals.map((v, i) => [x(i), y(v)]);
+  const line = pts.map((p, i) => (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1)).join("");
+  const ticks = [0, .5, 1].map(f => Math.round(niceMax * f));
+  const lbl = data.length <= 7 ? data.map((_, i) => i) : [0, Math.floor((data.length - 1) / 2), data.length - 1];
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  svg.innerHTML = `<defs><linearGradient id="ar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4A93F0" stop-opacity=".28"/><stop offset="1" stop-color="#4A93F0" stop-opacity="0"/></linearGradient></defs>
+    <g class="grid">${ticks.map(t => `<line x1="${padL}" x2="${W - 4}" y1="${y(t)}" y2="${y(t)}"/>`).join("")}</g>
+    <g class="ax">${ticks.map(t => `<text x="${padL - 6}" y="${y(t) + 3}" text-anchor="end">${t >= 1000 ? (t / 1000) + "k" : t}</text>`).join("")}
+      ${lbl.map(i => `<text x="${x(i)}" y="${H - 4}" text-anchor="${i === 0 && data.length > 7 ? "start" : i === data.length - 1 && data.length > 7 ? "end" : "middle"}">${data[i].d.toLocaleDateString("en-GB", data.length <= 7 ? { weekday: "short" } : { day: "numeric", month: "short" })}</text>`).join("")}</g>
+    <path d="${line}L${x(data.length - 1)} ${y(0)}L${x(0)} ${y(0)}Z" fill="url(#ar)"/>
+    <path d="${line}" fill="none" stroke="#4A93F0" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+    <line id="cross" y1="${padT}" y2="${y(0)}" stroke="rgba(243,241,236,.35)" stroke-dasharray="3 3" opacity="0"/>
+    <circle id="dot" r="5" fill="#4A93F0" stroke="#15151B" stroke-width="2" opacity="0"/>`;
+  const total = vals.reduce((a, b) => a + b, 0);
+  $("ctTotal").textContent = fmt(total); $("ctLabel").textContent = metric === "visits" ? "visitors" : "signups";
+  $("ctAvg").textContent = fmt(Math.round(total / data.length)); $("ctPeak").textContent = fmt(max);
+  const tip = $("tip"), cross = svg.querySelector("#cross"), dot = svg.querySelector("#dot"), box = $("chart");
+  const show = e => { const r = svg.getBoundingClientRect(), px = (e.clientX - r.left) / r.width * W;
+    const i = Math.max(0, Math.min(data.length - 1, Math.round((px - padL) / iw * (data.length - 1))));
+    cross.setAttribute("x1", pts[i][0]); cross.setAttribute("x2", pts[i][0]); cross.setAttribute("opacity", 1);
+    dot.setAttribute("cx", pts[i][0]); dot.setAttribute("cy", pts[i][1]); dot.setAttribute("opacity", 1);
+    tip.innerHTML = `<span class="sub">${data[i].d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" })}</span><b class="num">${fmt(vals[i])} ${metric === "visits" ? "visitors" : "signups"}</b>`;
+    const lx = Math.max(60, Math.min(r.width - 60, pts[i][0] / W * r.width)); tip.style.left = lx + "px"; tip.style.top = "-6px"; tip.style.opacity = 1; };
+  const hide = () => { tip.style.opacity = 0; cross.setAttribute("opacity", 0); dot.setAttribute("opacity", 0); };
+  box.onpointermove = box.onpointerdown = show; box.onpointerleave = hide; box.onpointerup = e => { if (e.pointerType !== "mouse") setTimeout(hide, 1600); };
+}
+
+function renderAll(){ renderOverview(); renderChart(); renderProducts(); renderList(); }
+
+/* ---------- controls ---------- */
+document.querySelectorAll(".seg button").forEach(b => b.onclick = () => {
+  document.querySelectorAll(".seg button").forEach(x => x.removeAttribute("aria-pressed")); b.setAttribute("aria-pressed", "true");
+  range = +b.dataset.r; renderOverview(); renderChart(); });
+document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => {
+  document.querySelectorAll(".tabs button").forEach(x => x.removeAttribute("aria-pressed")); b.setAttribute("aria-pressed", "true");
+  metric = b.dataset.m; renderChart(); });
+$("q").oninput = () => { shown = 8; renderList(); };
+$("moreBtn").onclick = () => { shown += 10; renderList(); };
+$("csv").onclick = () => {
+  const rows = [["email", "phone", "gift_code", "source", "device", "joined"], ...signups.map(s => [s.email, s.phone, s.code, s.src, s.dev, new Date(Date.now() - s.ago * 6e4).toISOString()])];
+  const blob = new Blob([rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n")], { type: "text/csv" });
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "drop01-waitlist.csv"; a.click(); };
+// bottom nav highlights the section in view
+const navLinks = [...document.querySelectorAll(".nav a")];
+const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) navLinks.forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#" + e.target.id)); }), { rootMargin: "-40% 0px -55% 0px" });
+["overview", "funnel", "products", "signups"].forEach(id => io.observe($(id)));
+// countdown + "on site now" drift
+const DROP = new Date("2026-11-27T18:00:00+01:00");
+function tick(){ const s = Math.max(0, (DROP - Date.now()) / 1000), d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60);
+  $("cd").textContent = `${d}d ${String(h).padStart(2, "0")}h ${String(m).padStart(2, "0")}m`; }
+tick(); setInterval(tick, 30000);
+setInterval(() => { $("live").textContent = (4 + ((Math.random() * 8) | 0)) + " on site now"; }, 5000);
+addEventListener("resize", renderChart);
+renderAll();
+</script>
+</body>
+</html>

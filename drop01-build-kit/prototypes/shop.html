@@ -1,0 +1,733 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0B0B0F">
+<title>Drop 01 Shop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,600..800&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0B0B0F; --card:#141419; --card2:#1B1B22; --line:rgba(243,241,236,.08); --line2:rgba(243,241,236,.15);
+  --ink:#F3F1EC; --ink2:rgba(243,241,236,.68); --ink3:rgba(243,241,236,.44);
+  --good:#5BC98C; --warn:#E8B44A; --bad:#E5606A;
+  --holo:linear-gradient(100deg,#FFB3D9,#FFE7A3 30%,#B8FFD9 55%,#A8DCFF 78%,#D4B8FF);
+  --f-d:"Bricolage Grotesque","Arial Narrow",system-ui,sans-serif; --f-b:Manrope,system-ui,sans-serif; --f-m:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --sx:50;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-b);font-size:15px;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+.app{max-width:520px;margin:0 auto;padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
+.mono{font-family:var(--f-m);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3)}
+.num{font-variant-numeric:tabular-nums}
+.sub{font-size:13px;color:var(--ink3)}
+.display{font-family:var(--f-d);font-variation-settings:"wdth" 78;font-weight:800;letter-spacing:-.03em;line-height:.88}
+.holo-t{background:var(--holo);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:holoT 6s ease-in-out infinite alternate}
+@keyframes holoT{to{background-position:100% 0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* announcement + header */
+.ann{overflow:hidden;white-space:nowrap;background:var(--holo);color:#121216;font-family:var(--f-m);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;padding:7px 0}
+.ann div{display:inline-flex;animation:ann 26s linear infinite}
+.ann span{padding-right:40px}
+@keyframes ann{to{transform:translateX(-50%)}}
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:8px;padding:10px 16px;background:rgba(11,11,15,.86);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.mark{font-family:var(--f-d);font-variation-settings:"wdth" 78;font-weight:800;font-size:24px;letter-spacing:-.02em;background:none;border:0;padding:0}
+.mark span{background:var(--holo);-webkit-background-clip:text;background-clip:text;color:transparent}
+.where{display:none;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--good);background:rgba(91,201,140,.1);padding:4px 8px;border-radius:99px;margin-left:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.where.on{display:inline-flex}
+.ib{width:40px;height:40px;border-radius:13px;border:1px solid var(--line2);background:var(--card);display:grid;place-items:center;position:relative;flex:none}
+.ib.first{margin-left:auto}
+.ib svg,.ic{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.ib b{position:absolute;top:-5px;right:-5px;min-width:19px;height:19px;border-radius:10px;background:var(--holo);color:#121216;font-size:11px;display:grid;place-items:center;padding:0 5px}
+.ib.bump{animation:bump .45s cubic-bezier(.3,1.6,.5,1)}
+@keyframes bump{40%{transform:scale(1.25) rotate(-8deg)}}
+
+/* social proof pill */
+.proof{position:fixed;top:calc(80px + env(safe-area-inset-top,0px));left:50%;z-index:19;transform:translate(-50%,-14px);opacity:0;transition:.35s cubic-bezier(.2,.8,.2,1);pointer-events:none;display:flex;align-items:center;gap:8px;max-width:calc(100% - 32px);background:rgba(27,27,34,.92);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid var(--line2);border-radius:99px;padding:7px 14px 7px 8px;font-size:12.5px;white-space:nowrap}
+.proof.on{opacity:1;transform:translate(-50%,0)}
+.proof i{width:24px;height:24px;border-radius:50%;background:var(--a);flex:none}
+.proof b{font-weight:700}
+
+/* views */
+.view{display:none;animation:in .35s ease}
+.view.on{display:block}
+@keyframes in{from{opacity:0;transform:translateY(10px)}}
+
+/* ---------- hero ---------- */
+.hero{padding:22px 16px 0;position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;left:50%;top:150px;width:520px;height:520px;margin-left:-260px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,231,163,.16),rgba(168,220,255,.07) 50%,transparent);pointer-events:none}
+.live{display:inline-flex;align-items:center;gap:7px}
+.live i{width:7px;height:7px;border-radius:50%;background:var(--good);box-shadow:0 0 0 3px rgba(91,201,140,.2);animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 6px rgba(91,201,140,0)}}
+.hero h1{font-size:clamp(64px,21vw,112px);margin:10px 0 0;position:relative}
+.stage{position:relative;height:330px;margin:6px -16px 0;perspective:900px;touch-action:pan-y}
+.fan{position:absolute;left:50%;top:14px;width:190px;height:250px;margin-left:-95px;transform-style:preserve-3d}
+.fcard{position:absolute;inset:0;border-radius:20px;transition:transform .7s cubic-bezier(.2,.8,.2,1),filter .7s,opacity .7s;cursor:pointer;will-change:transform}
+.fcard .art{height:100%;aspect-ratio:auto;border-radius:20px;box-shadow:0 30px 60px rgba(0,0,0,.55),inset 0 0 0 1.5px rgba(255,255,255,.55)}
+.fcard .tag{position:absolute;left:12px;right:12px;bottom:12px;display:flex;justify-content:space-between;align-items:center;background:rgba(11,11,15,.82);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-radius:12px;padding:8px 10px;font-size:12px}
+.fcard .tag b{font-size:13px}
+.dots{position:absolute;left:0;right:0;bottom:22px;display:flex;justify-content:center;gap:6px}
+.dots i{width:6px;height:6px;border-radius:3px;background:var(--line2);transition:width .3s,background .3s}
+.dots i.on{width:18px;background:var(--ink)}
+.promise{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin:0 0 12px;font-size:13.5px;line-height:1.4}
+.promise .ic{color:var(--good);width:22px;height:22px;flex:none}
+.promise b{color:var(--ink)}
+.cta{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border:0;border-radius:16px;padding:17px;font-weight:800;font-size:16px;background:var(--holo);background-size:200% 100%;color:#121216;transition:transform .15s}
+.cta::after{content:"";position:absolute;top:0;bottom:0;width:40%;left:-50%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.65),transparent);animation:shine 3.2s ease-in-out infinite}
+@keyframes shine{0%,55%{left:-50%}100%{left:120%}}
+.cta:active{transform:scale(.98)}
+.cta.dark{background:var(--ink)}
+.cta.dark::after{display:none}
+.cta:disabled{opacity:.4}
+.cta:disabled::after{display:none}
+.timer{display:flex;gap:6px;margin-top:10px}
+.timer div{flex:1;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 0;text-align:center}
+.timer b{display:block;font-family:var(--f-d);font-variation-settings:"wdth" 78;font-weight:800;font-size:22px}
+.timer span{font-family:var(--f-m);font-size:9px;letter-spacing:.14em;color:var(--ink3);text-transform:uppercase}
+.trust{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:12px}
+.trust div{display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center;font-size:11px;font-weight:700;color:var(--ink2);padding:10px 4px;border-radius:12px;background:var(--card);border:1px solid var(--line)}
+.trust .ic{width:18px;height:18px;color:var(--ink)}
+
+/* product art + foil */
+.art{position:relative;aspect-ratio:4/5;border-radius:18px;overflow:hidden;display:grid;place-items:center;background:var(--a,var(--holo));isolation:isolate}
+.art::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(-45deg,rgba(0,0,0,.07) 0 1px,transparent 1px 8px),radial-gradient(120% 80% at 50% 0%,rgba(255,255,255,.35),transparent 60%);z-index:-1}
+.art::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.55) 45%,rgba(255,255,255,0) 52%,rgba(168,220,255,.3) 60%,transparent 70%);background-size:300% 100%;background-position:calc(var(--sx) * 1%) 0;mix-blend-mode:soft-light;pointer-events:none}
+.art .no{font-family:var(--f-d);font-variation-settings:"wdth" 78;font-weight:800;font-size:72px;letter-spacing:-.04em;color:rgba(18,18,22,.85);text-shadow:-1px -1px 0 rgba(255,255,255,.5),2px 2px 0 rgba(0,0,0,.15)}
+.art .shape{position:absolute;width:56%;aspect-ratio:1;border-radius:var(--sh,50%);border:2px solid rgba(18,18,22,.18);transform:rotate(var(--rot,0deg))}
+.art .sold{position:absolute;inset:0;background:rgba(11,11,15,.55);display:grid;place-items:center;font-family:var(--f-m);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink)}
+.fcard .art .no{font-size:96px}
+
+/* sections */
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px}
+.sec{display:flex;align-items:baseline;justify-content:space-between;margin:34px 16px 12px}
+.sec h2{margin:0;font-family:var(--f-d);font-variation-settings:"wdth" 78;font-weight:800;font-size:32px;letter-spacing:-.02em}
+.field{flex:1;min-width:0;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:13px 12px;outline:none;width:100%;font-size:16px}
+.field:focus{border-color:rgba(243,241,236,.35)}
+.btn{border:0;border-radius:12px;padding:12px 16px;font-weight:800;font-size:14px;background:var(--ink);color:var(--bg);white-space:nowrap}
+.btn.ghost{background:var(--card2);color:var(--ink);border:1px solid var(--line2)}
+.pc{margin:14px 16px 0}
+.pc h3{margin:0 0 2px;font-size:16px}
+.pcrow{display:flex;gap:8px;margin-top:12px}
+.pcres{margin-top:12px;font-size:14px;line-height:1.5;display:flex;gap:10px;align-items:flex-start}
+.pcres .ok{color:var(--good)} .pcres .no{color:var(--bad)}
+.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:0 16px 2px}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1px solid var(--line2);background:var(--card);border-radius:99px;padding:8px 13px;font-size:13px;font-weight:700;color:var(--ink2)}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 12px;padding:14px 16px 0}
+.pcard{position:relative;opacity:0;transform:translateY(16px);transition:opacity .5s,transform .5s cubic-bezier(.2,.8,.2,1)}
+.pcard.in{opacity:1;transform:none}
+.pcard .art{cursor:pointer;transition:transform .2s}
+.pcard .art:active{transform:scale(.97)}
+.badge{position:absolute;top:10px;left:10px;z-index:2;font-family:var(--f-m);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;padding:4px 8px;border-radius:99px;background:rgba(11,11,15,.82);color:var(--ink)}
+.badge.low{color:var(--warn)}
+.heart{position:absolute;top:10px;right:10px;z-index:2;font-size:11px;font-weight:800;padding:4px 8px;border-radius:99px;background:rgba(255,255,255,.78);color:#121216}
+.pcard .n{font-weight:700;font-size:14px;margin:10px 2px 2px}
+.pcard .meta{font-size:11.5px;margin:0 2px 6px}
+.pcard .meta .warn{color:var(--warn);font-weight:700}
+.mini-track{height:3px;border-radius:2px;background:var(--card2);margin:0 2px 8px;overflow:hidden}
+.mini-track i{display:block;height:100%;background:var(--holo)}
+.pcard .p{display:flex;align-items:center;justify-content:space-between;margin:0 2px}
+.pcard .p b{font-size:15px}
+.add{height:36px;padding:0 13px;border-radius:11px;border:0;background:var(--ink);color:var(--bg);font-size:13px;font-weight:800;display:flex;align-items:center;gap:4px;transition:transform .15s,background .2s}
+.add:active{transform:scale(.9)}
+.add.done{background:var(--good)}
+.add.notify{background:var(--card2);color:var(--ink);border:1px solid var(--line2)}
+
+/* bundle */
+.bundle{margin:16px 16px 0;position:relative;overflow:hidden;border-radius:20px;padding:18px;background:linear-gradient(var(--card),var(--card)) padding-box,var(--holo) border-box;border:1.5px solid transparent}
+.bundle .arts{display:flex;margin:12px 0 14px}
+.bundle .arts .art{width:74px;border-radius:14px;margin-right:-16px;box-shadow:0 10px 24px rgba(0,0,0,.5);transform:rotate(var(--r))}
+.bundle .arts .art .no{font-size:28px}
+.bundle h3{margin:0;font-family:var(--f-d);font-variation-settings:"wdth" 78;font-weight:800;font-size:30px;letter-spacing:-.02em}
+.bundle .pr{display:flex;align-items:baseline;gap:8px;margin-bottom:12px}
+.bundle .pr b{font-size:22px}
+.bundle .pr s{color:var(--ink3)}
+.save{font-size:11px;font-weight:800;padding:3px 8px;border-radius:99px;background:rgba(91,201,140,.14);color:var(--good)}
+
+/* how / faq / footer */
+.how{display:grid;gap:10px;padding:0 16px}
+.how .card{display:grid;grid-template-columns:42px 1fr;gap:12px;align-items:center}
+.how .k{width:42px;height:42px;border-radius:13px;background:var(--card2);display:grid;place-items:center;font-family:var(--f-d);font-weight:800;font-size:19px}
+.how b{display:block;font-size:14px;margin-bottom:2px}
+details.faq{border-top:1px solid var(--line);margin:0 16px}
+details.faq:last-of-type{border-bottom:1px solid var(--line)}
+details.faq summary{list-style:none;padding:16px 0;font-weight:700;display:flex;justify-content:space-between;cursor:pointer}
+details.faq summary::-webkit-details-marker{display:none}
+details.faq summary::after{content:"+";color:var(--ink3);font-size:20px;line-height:1;transition:transform .2s}
+details.faq[open] summary::after{transform:rotate(45deg)}
+details.faq p{margin:0 0 16px;color:var(--ink2);font-size:14px;line-height:1.55}
+.wl{margin:28px 16px 0;text-align:center}
+.wl h3{margin:4px 0 6px;font-family:var(--f-d);font-variation-settings:"wdth" 78;font-weight:800;font-size:28px}
+footer{margin-top:40px;padding:26px 16px 10px;border-top:1px solid var(--line)}
+footer .display{font-size:22vw;line-height:.8;margin:6px 0 18px}
+@media(min-width:520px){footer .display{font-size:114px}}
+.paylogos{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}
+.paylogos span{font-family:var(--f-m);font-size:10px;letter-spacing:.08em;padding:5px 8px;border-radius:8px;border:1px solid var(--line2);color:var(--ink2)}
+
+/* sticky bag bar */
+.bagbar{position:fixed;left:0;right:0;bottom:0;z-index:18;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));transform:translateY(110%);transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.bagbar.on{transform:none}
+.bagbar .in{max-width:496px;margin:0 auto;background:rgba(20,20,25,.94);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid var(--line2);border-radius:20px;padding:10px 10px 10px 14px;box-shadow:0 18px 40px rgba(0,0,0,.5)}
+.bagbar .row{display:flex;align-items:center;gap:10px}
+.bagbar .t{flex:1;min-width:0;font-size:13px;line-height:1.3}
+.bagbar .t b{font-size:15px}
+.bagbar .btn{background:var(--holo);color:#121216;padding:13px 16px;border-radius:14px}
+.bagbar .track{margin-top:8px}
+
+/* product page */
+.back{display:flex;align-items:center;gap:6px;background:none;border:0;color:var(--ink2);font-weight:700;padding:14px 16px 6px}
+.pp .hero-art{position:relative;perspective:800px;padding:6px 16px 0}
+.pp .hero-art .art{border-radius:24px;aspect-ratio:1/1.05;transition:transform .2s ease-out;box-shadow:0 30px 60px rgba(0,0,0,.45)}
+.pp .hero-art .art .no{font-size:150px}
+.pp .hero-art .badge{left:26px;top:16px}.pp .hero-art .heart{right:26px;top:16px}
+.thumbs{display:flex;gap:8px;padding:10px 16px 0}
+.thumbs i{width:54px;aspect-ratio:1;border-radius:12px;background:var(--a,var(--holo));opacity:.5;border:2px solid transparent}
+.thumbs i.on{opacity:1;border-color:var(--ink)}
+.pp h1{margin:16px 16px 6px;font-size:44px}
+.pp .price{display:flex;align-items:baseline;gap:10px;margin:0 16px}
+.pp .price b{font-size:24px}
+.stockbar{margin:14px 16px 0}
+.stockbar .row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:7px;color:var(--ink2)}
+.track{height:6px;border-radius:99px;background:var(--card2);overflow:hidden}
+.track i{display:block;height:100%;border-radius:99px;background:var(--holo);transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.opt{margin:20px 16px 0}
+.opt .l{display:flex;justify-content:space-between;margin-bottom:10px;font-size:14px;font-weight:700}
+.sizes{display:flex;gap:8px;flex-wrap:wrap}
+.sizes button{min-width:52px;padding:11px 12px;border-radius:12px;border:1px solid var(--line2);background:var(--card);font-weight:700}
+.sizes button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.sizes button:disabled{opacity:.3;text-decoration:line-through}
+.swatches{display:flex;gap:10px}
+.swatches button{width:38px;height:38px;border-radius:50%;border:2px solid transparent;outline:1px solid var(--line2);outline-offset:2px;background:var(--c)}
+.swatches button[aria-pressed="true"]{outline:2px solid var(--ink)}
+.eta{margin:20px 16px 0;display:flex;gap:12px;align-items:center}
+.eta .ic{width:22px;height:22px;flex:none;color:var(--good)}
+.eta div{font-size:14px;line-height:1.45}
+.pp .trust{margin:12px 16px 0}
+.pairs{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding:0 16px}
+.pairs::-webkit-scrollbar{display:none}
+.pair{flex:none;width:140px}
+.pair .art{border-radius:14px;cursor:pointer}
+.pair .art .no{font-size:44px}
+.pair .r{display:flex;justify-content:space-between;align-items:center;margin-top:8px;font-size:13px}
+.pair .add{height:30px;padding:0 10px;font-size:12px}
+.buybar{position:sticky;bottom:0;z-index:15;display:flex;gap:10px;align-items:center;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));background:rgba(11,11,15,.92);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-top:1px solid var(--line);margin-top:24px}
+.qty{display:flex;align-items:center;border:1px solid var(--line2);border-radius:14px;background:var(--card)}
+.qty button{width:40px;height:52px;border:0;background:none;font-size:20px;color:var(--ink2)}
+.qty span{min-width:22px;text-align:center;font-weight:800}
+.buybar .cta{flex:1}
+
+/* cart drawer */
+.scrim{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .2s}
+.scrim.on{opacity:1;pointer-events:auto}
+.drawer{position:fixed;left:0;right:0;bottom:0;z-index:41;max-width:520px;margin:0 auto;max-height:92vh;display:flex;flex-direction:column;background:var(--card);border-radius:24px 24px 0 0;border-top:1px solid var(--line2);transform:translateY(100%);visibility:hidden;transition:transform .3s cubic-bezier(.2,.8,.2,1),visibility 0s .3s}
+.drawer.on{transform:none;visibility:visible;transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+.drawer .hd{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 10px}
+.drawer .hd h3{margin:0;font-family:var(--f-d);font-variation-settings:"wdth" 78;font-weight:800;font-size:30px}
+.drawer .bd{overflow:auto;padding:0 18px}
+.drawer .ft{padding:14px 18px calc(16px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line)}
+.free{background:var(--card2);border-radius:14px;padding:12px;font-size:13px;margin-bottom:6px}
+.free .track{margin-top:8px}
+.ci{display:grid;grid-template-columns:64px 1fr auto;gap:12px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
+.ci.first{border-top:0}
+.ci .art{border-radius:12px;aspect-ratio:1}
+.ci .art .no{font-size:22px}
+.ci .n{font-weight:700;font-size:14px}
+.ci .qty{border-radius:10px;margin-top:6px;display:inline-flex}
+.ci .qty button{width:32px;height:32px;font-size:16px}
+.gift .art{background:var(--card2)!important}
+.gift .art::after{display:none}
+.gift .free-t{color:var(--good);font-weight:800}
+.upsell{margin:8px 0 6px}
+.upsell .mono{margin-bottom:8px}
+.ups{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+.ups::-webkit-scrollbar{display:none}
+.up{flex:none;display:flex;align-items:center;gap:10px;background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:8px 10px 8px 8px}
+.up .art{width:40px;border-radius:9px;aspect-ratio:1}
+.up .art .no{font-size:15px}
+.up div{font-size:12px;line-height:1.3}
+.up .hint{color:var(--good);font-weight:700;font-size:10.5px}
+.up .add{height:30px;padding:0 10px;font-size:12px}
+.tot{display:flex;justify-content:space-between;font-size:14px;margin:4px 0;color:var(--ink2)}
+.tot.big{font-size:18px;color:var(--ink);font-weight:800;margin:8px 0 12px}
+.express{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.express button{border:0;border-radius:14px;padding:13px;font-weight:800;font-size:14px}
+.express .apple{background:#fff;color:#000}
+.express .ideal{background:#CC0066;color:#fff}
+.empty{text-align:center;padding:30px 0 40px;color:var(--ink3)}
+
+/* checkout */
+.co{padding:4px 16px 0}
+.co h1{font-size:46px;margin:4px 0 4px}
+.sumtoggle{display:flex;justify-content:space-between;align-items:center;width:100%;margin-top:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-weight:700;font-size:14px}
+.sumtoggle span:first-child{color:var(--ink2)}
+.exp-h{display:flex;align-items:center;gap:10px;margin:18px 0 10px;color:var(--ink3);font-size:12px}
+.exp-h::before,.exp-h::after{content:"";flex:1;height:1px;background:var(--line2)}
+.box{margin-top:12px}
+.box h3{display:flex;align-items:center;gap:10px;margin:0 0 12px;font-size:16px}
+.box h3 em{font-style:normal;width:24px;height:24px;border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-size:12px}
+.box h3 .chk{margin-left:auto;color:var(--good);font-size:13px;opacity:0;transition:opacity .2s}
+.box.valid h3 .chk{opacity:1}
+.fgrid{display:grid;gap:8px}
+.fgrid.two{grid-template-columns:1.3fr 1fr}
+label.f{display:block;font-size:12px;color:var(--ink3);margin-bottom:5px}
+.addr{margin-top:10px;font-size:13px;color:var(--ink2);display:flex;gap:8px;align-items:center}
+.slots{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.slot{text-align:left;border:1px solid var(--line2);background:var(--card2);border-radius:14px;padding:12px}
+.slot b{display:block;font-size:14px}
+.slot span{font-size:12px;color:var(--ink3)}
+.slot .left{color:var(--warn)}
+.slot[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.slot:disabled{opacity:.35}
+.pays{display:grid;gap:8px}
+.pay{display:flex;align-items:center;gap:12px;border:1px solid var(--line2);background:var(--card2);border-radius:14px;padding:13px;text-align:left}
+.pay .lg{width:38px;height:26px;border-radius:6px;display:grid;place-items:center;font-family:var(--f-m);font-size:9px;font-weight:700;background:#fff;color:#121216}
+.pay .rd{margin-left:auto;width:20px;height:20px;border-radius:50%;border:2px solid var(--line2);flex:none}
+.pay[aria-pressed="true"]{border-color:var(--ink)}
+.pay[aria-pressed="true"] .rd{border:6px solid var(--ink)}
+.summary .row{display:flex;justify-content:space-between;font-size:14px;padding:5px 0;color:var(--ink2)}
+.summary .row.t{color:var(--ink);font-weight:800;font-size:17px;border-top:1px solid var(--line);margin-top:6px;padding-top:12px}
+.legal{font-size:11.5px;color:var(--ink3);line-height:1.5;margin:12px 0 0}
+.secure{display:flex;justify-content:center;gap:14px;margin-top:10px;font-size:11.5px;color:var(--ink3)}
+
+/* success */
+.ok{padding:30px 16px 0;text-align:center}
+.ok .tick{width:78px;height:78px;margin:0 auto 18px;border-radius:50%;background:var(--holo);display:grid;place-items:center;animation:pop .6s cubic-bezier(.3,1.6,.5,1)}
+.ok .tick svg{width:36px;height:36px;stroke:#121216;stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:30;stroke-dashoffset:30;animation:draw .5s .35s ease-out forwards}
+@keyframes pop{from{transform:scale(.3);opacity:0}}
+@keyframes draw{to{stroke-dashoffset:0}}
+.ok h1{font-size:60px;margin:0 0 10px}
+.track-st{margin:24px 16px 0;text-align:left}
+.tst{display:grid;grid-template-columns:28px 1fr;gap:12px;padding-bottom:18px;position:relative}
+.tst::before{content:"";position:absolute;left:13px;top:28px;bottom:2px;width:2px;background:var(--line2)}
+.tst:last-child::before{display:none}
+.tst .d{width:28px;height:28px;border-radius:50%;border:2px solid var(--line2);background:var(--bg);display:grid;place-items:center;font-size:12px}
+.tst.on .d{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.tst.cur .d{border-color:var(--ink);animation:pulse2 1.4s ease-in-out infinite}
+@keyframes pulse2{50%{box-shadow:0 0 0 6px rgba(243,241,236,.08)}}
+.tst b{display:block;font-size:14px}
+.tst span{font-size:12px;color:var(--ink3)}
+.refer{margin:14px 16px 0;text-align:center;background:linear-gradient(var(--card),var(--card)) padding-box,var(--holo) border-box;border:1.5px solid transparent}
+.refer h3{margin:0 0 6px;font-size:17px}
+.code{display:inline-block;font-family:var(--f-m);font-size:18px;letter-spacing:.14em;padding:10px 16px;border:1.5px dashed var(--line2);border-radius:12px;margin:10px 0}
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:70}
+.toast{position:fixed;left:50%;bottom:calc(104px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);z-index:60;background:var(--ink);color:var(--bg);font-weight:800;font-size:13px;padding:11px 16px;border-radius:13px;opacity:0;transition:.2s;pointer-events:none;white-space:nowrap}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.flyer{position:fixed;z-index:65;border-radius:16px;pointer-events:none;background:var(--a);box-shadow:0 12px 30px rgba(0,0,0,.5)}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="ann"><div><span>Free delivery in Groningen from €35</span><span>✦ Order before 16:00 → at your door tonight</span><span>✦ Pay with iDEAL</span><span>✦ 14-day free returns</span><span>Free delivery in Groningen from €35</span><span>✦ Order before 16:00 → at your door tonight</span><span>✦ Pay with iDEAL</span><span>✦ 14-day free returns</span></div></div>
+  <header class="top">
+    <button class="mark" onclick="go('home')">DROP/<span>01</span></button>
+    <span class="where" id="where"></span>
+    <button class="ib first" aria-label="Search" onclick="toast('Search')"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg></button>
+    <button class="ib" id="bagBtn" aria-label="Bag" onclick="openCart()"><svg viewBox="0 0 24 24"><path d="M6 7h12l-1 13H7zM9 7a3 3 0 0 1 6 0"/></svg><b id="cartN">0</b></button>
+  </header>
+
+  <!-- ================= HOME ================= -->
+  <main class="view on" id="v-home">
+    <div class="hero">
+      <span class="mono live"><i></i>Drop 01 is live · <span id="leftAll"></span> pieces left</span>
+      <h1 class="display">Drop 01<br><span class="holo-t">is here.</span></h1>
+      <div class="stage" id="stage"><div class="fan" id="fan"></div><div class="dots" id="dots"></div></div>
+      <div class="promise"><svg class="ic" viewBox="0 0 24 24"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17.5" cy="17.5" r="1.8"/></svg>
+        <div id="promise"></div></div>
+      <button class="cta" onclick="document.getElementById('shop').scrollIntoView({behavior:'smooth'})">Shop the drop ↓</button>
+      <div class="timer" id="timer"></div>
+      <div class="trust">
+        <div><svg class="ic" viewBox="0 0 24 24"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17.5" cy="17.5" r="1.8"/></svg>Same-evening delivery</div>
+        <div><svg class="ic" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.3-5.6M4 4v4h4"/></svg>14-day free returns</div>
+        <div><svg class="ic" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Secure iDEAL</div>
+      </div>
+    </div>
+
+    <div class="card pc">
+      <h3>Do we deliver to you?</h3>
+      <div class="sub">Check your postcode — takes 2 seconds</div>
+      <div class="pcrow"><input class="field" id="pcIn" placeholder="e.g. 9711 LD" maxlength="7" autocomplete="postal-code" inputmode="text"><button class="btn" onclick="checkPc()">Check</button></div>
+      <div class="pcres" id="pcRes" hidden></div>
+    </div>
+
+    <div class="sec" id="shop"><h2>The drop</h2><span class="sub" id="countLbl"></span></div>
+    <div class="chips" id="cats"></div>
+    <div class="grid" id="grid"></div>
+
+    <div class="bundle" id="bundle">
+      <span class="mono">Best value</span>
+      <h3>The full drop</h3>
+      <div class="arts" id="bArts"></div>
+      <div class="pr"><b class="num" id="bPrice"></b><s class="num" id="bWas"></s><span class="save">Save 15%</span></div>
+      <p class="sub" style="margin:0 0 14px">Item 01 + Item 03 + Item 06 · free delivery · free mystery gift</p>
+      <button class="cta" id="bAdd">Get the full drop</button>
+    </div>
+
+    <div class="sec"><h2>How it works</h2></div>
+    <div class="how">
+      <div class="card"><div class="k">1</div><div><b>Order before 16:00</b><span class="sub">Pick a delivery window that suits you.</span></div></div>
+      <div class="card"><div class="k">2</div><div><b>Pay with iDEAL</b><span class="sub">Or card, Apple Pay, or a Tikkie link.</span></div></div>
+      <div class="card"><div class="k">3</div><div><b>We bring it over</b><span class="sub">WhatsApp heads-up when we’re 10 minutes away.</span></div></div>
+    </div>
+
+    <div class="sec"><h2>Questions</h2></div>
+    <details class="faq"><summary>How fast is delivery?</summary><p>Order before 16:00 and pick tonight’s 18:00–21:00 window. Otherwise choose any window in the next 3 days.</p></details>
+    <details class="faq"><summary>How much is delivery?</summary><p>Free from €35 inside the city. €3.95 below that. Haren and nearby villages: €5.95.</p></details>
+    <details class="faq"><summary>Can I return something?</summary><p>Yes — 14 days, no questions asked. Message us and we pick it up on our next route, for free.</p></details>
+    <details class="faq"><summary>Will there be a restock?</summary><p>No. Drop 01 is a limited run. Join the list for Drop 02 and you’ll hear first.</p></details>
+
+    <div class="card wl"><span class="mono">Missed something?</span><h3>Get Drop 02 first.</h3><p class="sub" style="margin:0 0 12px">Early access + a free gift for list members.</p>
+      <div class="pcrow" style="margin:0"><input class="field" type="email" placeholder="you@example.com"><button class="btn" onclick="toast('You’re on the list ✦')">Join</button></div></div>
+
+    <footer>
+      <div class="display holo-t">DROP/01</div>
+      <div class="paylogos"><span>iDEAL</span><span>Apple Pay</span><span>VISA</span><span>Mastercard</span><span>Tikkie</span></div>
+      <p class="sub" style="line-height:1.6">Groningen, NL · KvK 00000000 · BTW NL000000000B01<br>Terms · Privacy · Returns · WhatsApp us</p>
+      <p class="mono" style="margin-top:16px">Demo shop · fake products & prices</p>
+    </footer>
+  </main>
+
+  <main class="view pp" id="v-product"></main>
+  <main class="view" id="v-checkout"></main>
+  <main class="view" id="v-ok"></main>
+</div>
+
+<div class="bagbar" id="bagbar"><div class="in"><div class="row"><div class="t" id="bbText"></div><button class="btn" onclick="openCart()">View bag →</button></div><div class="track" id="bbTrack"><i></i></div></div></div>
+<div class="proof" id="proof"></div>
+<div class="scrim" id="scrim" onclick="closeCart()"></div>
+<aside class="drawer" id="drawer" aria-label="Bag">
+  <div class="hd"><h3>Your bag</h3><button class="ib" onclick="closeCart()" aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="bd" id="cartBody"></div>
+  <div class="ft" id="cartFoot"></div>
+</aside>
+<canvas id="fx"></canvas>
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const eur = n => "€" + n.toFixed(2).replace(".", ",");
+const vib = p => { try { navigator.vibrate && navigator.vibrate(p); } catch {} };
+function toast(t){ const el = $("toast"); el.textContent = t; el.classList.add("on"); clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove("on"), 1700); }
+
+/* ---------- catalogue (same items as the waitlist / CRM) ---------- */
+const ARTS = [
+  "linear-gradient(135deg,#FFB3D9,#FFE7A3 55%,#B8FFD9)", "linear-gradient(160deg,#A8DCFF,#D4B8FF 60%,#FFB3D9)", "linear-gradient(120deg,#B8FFD9,#A8DCFF 50%,#FFE7A3)",
+  "linear-gradient(200deg,#FFE7A3,#FFB3D9 50%,#D4B8FF)", "linear-gradient(140deg,#D4B8FF,#B8FFD9 60%,#FFE7A3)", "linear-gradient(110deg,#FFB3D9,#A8DCFF)",
+];
+const P = [
+  { id: 1, name: "Item 01", cat: "best", price: 34.95, stock: 42, run: 120, likes: 505, sizes: ["S", "M", "L", "XL"], out: ["XL"], colors: ["#16161B", "#E9E2D3", "#9FB4C7"], sh: "50%", rot: 0 },
+  { id: 2, name: "Item 02", cat: "new", price: 24.95, stock: 6, run: 80, likes: 342, sizes: ["One size"], out: [], colors: ["#D8C3A5", "#16161B"], sh: "18px", rot: 12 },
+  { id: 3, name: "Item 03", cat: "best", price: 49.0, stock: 18, run: 200, likes: 611, sizes: ["Holo edition"], out: [], colors: ["#C9C9D6"], sh: "50% 50% 12px 12px", rot: 0 },
+  { id: 4, name: "Item 04", cat: "new", price: 19.95, stock: 0, run: 60, likes: 197, sizes: ["S", "M", "L"], out: ["S", "M", "L"], colors: ["#F3F1EC"], sh: "8px", rot: 45 },
+  { id: 5, name: "Item 05", cat: "gift", price: 12.5, stock: 4, run: 100, likes: 158, sizes: ["Gift box"], out: [], colors: ["#16161B", "#E3B7C8"], sh: "50%", rot: 0 },
+  { id: 6, name: "Item 06", cat: "gift", price: 9.95, stock: 77, run: 150, likes: 96, sizes: ["Mini"], out: [], colors: ["#B8FFD9", "#A8DCFF", "#FFB3D9"], sh: "30% 70% 70% 30% / 30% 30% 70% 70%", rot: 20 },
+];
+const BUNDLE = { ids: [1, 3, 6], off: .15 };
+const art = (p, big) => `<div class="art" style="--a:${ARTS[p.id - 1]}"><div class="shape" style="--sh:${p.sh};--rot:${p.rot}deg"></div><span class="no">0${p.id}</span>${p.stock === 0 && !big ? `<div class="sold">Sold out</div>` : ""}</div>`;
+const stockBadge = p => p.stock === 0 ? "" : p.stock <= 10 ? `<span class="badge low">Only ${p.stock} left</span>` : p.cat === "new" ? `<span class="badge">New</span>` : p.cat === "best" ? `<span class="badge">Bestseller</span>` : "";
+const firstSize = p => p.sizes.find(s => !p.out.includes(s));
+
+/* ---------- views ---------- */
+let view = "home";
+function go(v, keep){ view = v; document.querySelectorAll(".view").forEach(x => x.classList.toggle("on", x.id === "v-" + v)); if (!keep) scrollTo(0, 0); updBag(); }
+
+/* ---------- delivery promise (cut-off 16:00) ---------- */
+let myZone = null;
+function promiseText(){
+  const now = new Date(), cut = new Date(now); cut.setHours(16, 0, 0, 0);
+  const s = (cut - now) / 1000, where = myZone ? ` in <b>${myZone.name}</b>` : " in Groningen";
+  return s > 0 ? `Order within <b class="num">${s / 3600 | 0}h ${String(s % 3600 / 60 | 0).padStart(2, "0")}m</b> → at your door <b>tonight 18–21</b>${where}`
+               : `Order now → delivered <b>tomorrow 12–15</b>${where}`;
+}
+function tickPromise(){ $("promise").innerHTML = promiseText(); const e = $("eta"); if (e) e.innerHTML = promiseText(); }
+
+/* ---------- hero: holographic card fan ---------- */
+const FAN = [P[2], P[0], P[1], P[4], P[5]];
+let fanI = 1, fanTimer;
+function renderFan(){
+  $("fan").innerHTML = FAN.map((p, i) => `<div class="fcard" data-i="${i}">${art(p, true)}<div class="tag"><span>${p.name}</span><b class="num">${eur(p.price)}</b></div></div>`).join("");
+  $("dots").innerHTML = FAN.map(() => "<i></i>").join("");
+  $("fan").querySelectorAll(".fcard").forEach(c => c.onclick = () => { const i = +c.dataset.i; if (i === fanI) openProduct(FAN[i].id); else setFan(i); });
+  setFan(fanI);
+}
+function setFan(i){
+  fanI = (i + FAN.length) % FAN.length;
+  $("fan").querySelectorAll(".fcard").forEach((c, k) => {
+    let d = k - fanI; if (d > 2) d -= FAN.length; if (d < -2) d += FAN.length;
+    const a = Math.abs(d);
+    c.style.transform = `translateX(${d * 92}px) translateZ(${-a * 120}px) rotateY(${-d * 24}deg) rotateZ(${d * 3}deg)`;
+    c.style.zIndex = 10 - a; c.style.filter = a ? `brightness(${1 - a * .25})` : "none"; c.style.opacity = a > 2 ? 0 : 1;
+  });
+  $("dots").querySelectorAll("i").forEach((d, k) => d.classList.toggle("on", k === fanI));
+  clearTimeout(fanTimer); fanTimer = setTimeout(() => setFan(fanI + 1), 3600);
+}
+(() => { let x0 = null; const st = $("stage");
+  st.addEventListener("touchstart", e => { x0 = e.touches[0].clientX; }, { passive: true });
+  st.addEventListener("touchend", e => { if (x0 === null) return; const dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 40) setFan(fanI + (dx < 0 ? 1 : -1)); x0 = null; }); })();
+
+/* ---------- home ---------- */
+let cat = "all";
+function renderGrid(){
+  const cats = [["all", "All"], ["new", "New"], ["best", "Bestsellers"], ["gift", "Gifts"]];
+  $("cats").innerHTML = cats.map(([k, l]) => `<button class="chip" aria-pressed="${k === cat}" data-c="${k}">${l}</button>`).join("");
+  $("cats").querySelectorAll(".chip").forEach(b => b.onclick = () => { cat = b.dataset.c; renderGrid(); });
+  const list = P.filter(p => cat === "all" || p.cat === cat);
+  $("countLbl").textContent = list.length + " pieces";
+  $("grid").innerHTML = list.map(p => { const cl = Math.round((p.run - p.stock) / p.run * 100);
+    return `<div class="pcard" data-id="${p.id}">${art(p)}${stockBadge(p)}<span class="heart">♥ ${p.likes}</span>
+    <div class="n">${p.name}</div>
+    <div class="meta sub">${p.stock ? (p.stock <= 10 ? `<span class="warn">${cl}% claimed</span>` : `${cl}% claimed`) : "Gone — notify me for Drop 02"}</div>
+    <div class="mini-track"><i style="width:${cl}%"></i></div>
+    <div class="p"><b class="num">${eur(p.price)}</b>${p.stock ? `<button class="add" data-add="${p.id}" aria-label="Add ${p.name}">+ Add</button>` : `<button class="add notify" data-notify="${p.id}">Notify</button>`}</div></div>`; }).join("");
+  $("grid").querySelectorAll(".pcard .art").forEach(c => c.onclick = () => openProduct(+c.closest(".pcard").dataset.id));
+  $("grid").querySelectorAll("[data-add]").forEach(b => b.onclick = () => { const p = P[b.dataset.add - 1]; addToCart(p, firstSize(p), p.colors[0], 1, b.closest(".pcard").querySelector(".art"));
+    b.classList.add("done"); b.textContent = "✓ Added"; setTimeout(() => { b.classList.remove("done"); b.textContent = "+ Add"; }, 1400); });
+  $("grid").querySelectorAll("[data-notify]").forEach(b => b.onclick = () => { b.textContent = "✓ We’ll tell you"; toast("We’ll WhatsApp you when it’s back"); });
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { rootMargin: "0px 0px -8% 0px" });
+  $("grid").querySelectorAll(".pcard").forEach((c, i) => { c.style.transitionDelay = (i % 2) * 70 + "ms"; io.observe(c); });
+}
+function renderBundle(){
+  const ps = BUNDLE.ids.map(id => P[id - 1]), was = ps.reduce((s, p) => s + p.price, 0);
+  $("bArts").innerHTML = ps.map((p, i) => art(p, true).replace('class="art"', `class="art" style="--r:${(i - 1) * 7}deg;--a:${ARTS[p.id - 1]}"`)).join("");
+  $("bPrice").textContent = eur(was * (1 - BUNDLE.off)); $("bWas").textContent = eur(was);
+  $("bAdd").onclick = () => { ps.forEach((p, i) => setTimeout(() => addToCart(p, firstSize(p), p.colors[0], 1, $("bArts").children[i], true), i * 160)); setTimeout(() => { toast("Full drop added · 15% off"); openCart(); }, 900); };
+}
+const DROP_END = Date.now() + (2 * 86400 + 14 * 3600 + 22 * 60) * 1000;
+function tick(){ let s = Math.max(0, (DROP_END - Date.now()) / 1000) | 0;
+  const v = [[s / 86400 | 0, "days"], [s % 86400 / 3600 | 0, "hrs"], [s % 3600 / 60 | 0, "min"], [s % 60, "sec"]];
+  $("timer").innerHTML = v.map(([n, l]) => `<div><b class="num">${String(n).padStart(2, "0")}</b><span>${l}${l === "days" ? " left" : ""}</span></div>`).join(""); }
+const ZONES = { "9711": "Centrum", "9712": "Centrum", "9724": "Oosterpoort", "9726": "Helpman", "9742": "Paddepoel", "9741": "Selwerd", "9715": "De Hoogte", "9743": "Vinkhuizen", "9737": "Beijum", "9728": "Corpus den Hoorn", "9751": "Haren", "9752": "Haren" };
+function zoneFor(pc){ const d = pc.replace(/\s/g, "").slice(0, 4); if (!/^\d{4}$/.test(d)) return null;
+  if (ZONES[d]) return { name: ZONES[d], fee: ZONES[d] === "Haren" ? 5.95 : 3.95 }; if (+d >= 9700 && +d <= 9759) return { name: "Groningen", fee: 3.95 }; return false; }
+function checkPc(){
+  const z = zoneFor($("pcIn").value), r = $("pcRes"); r.hidden = false;
+  if (z) { myZone = z; try { localStorage.setItem("d01-pc", $("pcIn").value); } catch {} $("where").innerHTML = `✓ ${z.name}`; $("where").classList.add("on"); tickPromise(); vib(10); }
+  r.innerHTML = z === null ? `<span class="no">✕</span><span>That doesn’t look like a Dutch postcode.</span>`
+    : z ? `<span class="ok">✓</span><span><b>Yes! We deliver to ${z.name}.</b> ${promiseText()}. Delivery ${eur(z.fee)} — free from €35.</span>`
+    : `<span class="no">✕</span><span>Not in our area yet. <a href="#" style="color:var(--ink)" onclick="toast('You’ll hear when we expand');return false">Tell me when you do</a></span>`;
+}
+$("pcIn").addEventListener("keydown", e => { if (e.key === "Enter") checkPc(); });
+
+/* ---------- product page ---------- */
+function openProduct(id){
+  const p = P[id - 1]; let size = firstSize(p) || null, color = p.colors[0], qty = 1;
+  const sold = p.run - p.stock;
+  const pairs = P.filter(x => x.id !== id && x.stock).sort((a, b) => a.price - b.price).slice(0, 4);
+  $("v-product").innerHTML = `<button class="back" onclick="go('home',1)"><svg class="ic" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>Back to the drop</button>
+    <div class="hero-art" id="tilt">${art(p, true)}${stockBadge(p)}<span class="heart">♥ ${p.likes} want this</span></div>
+    <div class="thumbs">${[0, 1, 2, 3].map(i => `<i class="${i ? "" : "on"}" style="--a:${ARTS[(id - 1 + i) % 6]}"></i>`).join("")}</div>
+    <h1 class="display">${p.name}</h1>
+    <div class="price"><b class="num">${eur(p.price)}</b><span class="sub">incl. BTW · free delivery from €35</span></div>
+    <div class="stockbar"><div class="row"><span>${p.stock ? `${p.stock <= 10 ? "⚡ " : ""}<b style="color:var(--ink)">${p.stock}</b> of ${p.run} left` : "Sold out"}</span><span>${Math.round(sold / p.run * 100)}% claimed</span></div><div class="track"><i style="width:0" data-w="${sold / p.run * 100}"></i></div></div>
+    ${p.sizes.length > 1 || p.sizes[0] !== "One size" ? `<div class="opt"><div class="l"><span>Size</span><span class="sub" style="font-weight:500">Fits true to size</span></div><div class="sizes" id="sizes">${p.sizes.map(s => `<button ${p.out.includes(s) ? "disabled" : ""} aria-pressed="${s === size}">${s}</button>`).join("")}</div></div>` : ""}
+    <div class="opt"><div class="l"><span>Colour</span></div><div class="swatches" id="sw">${p.colors.map((c, i) => `<button style="--c:${c}" aria-pressed="${!i}" aria-label="Colour ${i + 1}"></button>`).join("")}</div></div>
+    <div class="card eta"><svg class="ic" viewBox="0 0 24 24"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17.5" cy="17.5" r="1.8"/></svg><div id="eta">${promiseText()}</div></div>
+    <div class="trust"><div>🛵 Delivered by us</div><div>↩︎ 14-day returns</div><div>🔒 Secure iDEAL</div></div>
+    <div style="margin-top:22px">
+      <details class="faq" open><summary>Details</summary><p>Placeholder description. Material, fit and what makes it special go here — you fill this in from the dashboard.</p></details>
+      <details class="faq"><summary>Delivery & returns</summary><p>Same-evening delivery in Groningen when you order before 16:00. 14-day returns — we pick it up for free.</p></details>
+    </div>
+    <div class="sec" style="margin-top:26px"><h2 style="font-size:26px">Pairs well with</h2></div>
+    <div class="pairs">${pairs.map(x => `<div class="pair" data-id="${x.id}">${art(x)}<div class="r"><span>${x.name}<br><b class="num">${eur(x.price)}</b></span><button class="add" data-add="${x.id}">+ Add</button></div></div>`).join("")}</div>
+    <div class="buybar"><div class="qty"><button id="qm" aria-label="Less">−</button><span id="qv">1</span><button id="qp" aria-label="More">+</button></div>
+      <button class="cta" id="buy" ${p.stock ? "" : "disabled"}>${p.stock ? "Add to bag · " + eur(p.price) : "Sold out"}</button></div>`;
+  go("product");
+  requestAnimationFrame(() => requestAnimationFrame(() => { const t = document.querySelector("#v-product .stockbar .track i"); t.style.width = t.dataset.w + "%"; }));
+  const upd = () => { $("qv").textContent = qty; if (p.stock) $("buy").textContent = "Add to bag · " + eur(p.price * qty); };
+  $("qm").onclick = () => { qty = Math.max(1, qty - 1); upd(); }; $("qp").onclick = () => { qty = Math.min(p.stock || 1, qty + 1); upd(); };
+  document.querySelectorAll("#sizes button").forEach(b => b.onclick = () => { size = b.textContent; document.querySelectorAll("#sizes button").forEach(x => x.setAttribute("aria-pressed", x === b)); });
+  document.querySelectorAll("#sw button").forEach((b, i) => b.onclick = () => { color = p.colors[i]; document.querySelectorAll("#sw button").forEach(x => x.setAttribute("aria-pressed", x === b)); });
+  $("buy").onclick = () => { addToCart(p, size, color, qty, document.querySelector("#tilt .art")); setTimeout(openCart, 650); };
+  document.querySelectorAll("#v-product .pair .art").forEach(a => a.onclick = () => openProduct(+a.closest(".pair").dataset.id));
+  document.querySelectorAll("#v-product .pair [data-add]").forEach(b => b.onclick = () => { const x = P[b.dataset.add - 1]; addToCart(x, firstSize(x), x.colors[0], 1, b.closest(".pair").querySelector(".art")); b.textContent = "✓"; });
+  // the product art leans with your finger
+  const tilt = $("tilt"), a = tilt.querySelector(".art");
+  tilt.onpointermove = e => { const r = a.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+    a.style.transform = `rotateY(${x * 14}deg) rotateX(${-y * 14}deg)`; a.style.setProperty("--sx", 50 + x * 80); };
+  tilt.onpointerleave = () => { a.style.transform = ""; a.style.removeProperty("--sx"); };
+}
+
+/* ---------- bag ---------- */
+let cart = [];
+const FREE = 35;
+const lineKey = (p, size, color) => p.id + "|" + size + "|" + color;
+function bundleActive(){ return BUNDLE.ids.every(id => cart.some(l => l.p.id === id)); }
+function totals(){
+  const sub = cart.reduce((s, l) => s + l.p.price * l.qty, 0);
+  const disc = bundleActive() ? BUNDLE.ids.reduce((s, id) => s + P[id - 1].price, 0) * BUNDLE.off : 0;
+  return { sub, disc, total: sub - disc };
+}
+function updBag(){
+  const n = cart.reduce((s, l) => s + l.qty, 0), b = $("cartN"); b.textContent = n; b.hidden = !n;
+  const { total } = totals(), left = Math.max(0, FREE - total);
+  $("bagbar").classList.toggle("on", n > 0 && view === "home");
+  $("bbText").innerHTML = `<b class="num">${n} item${n > 1 ? "s" : ""} · ${eur(total)}</b><br><span class="sub">${left ? `${eur(left)} to free delivery` : "✓ Free delivery unlocked"}</span>`;
+  $("bbTrack").firstChild.style.width = Math.min(100, total / FREE * 100) + "%";
+}
+function addToCart(p, size, color, qty, fromEl, quiet){
+  const k = lineKey(p, size, color), ex = cart.find(l => l.k === k);
+  if (ex) ex.qty = Math.min(p.stock, ex.qty + qty); else cart.push({ k, p, size, color, qty });
+  vib(12);
+  if (fromEl) flyToBag(fromEl, p); else { updBag(); bumpBag(); }
+  if (!quiet && !fromEl) toast(`Added ${p.name}`);
+  if ($("drawer").classList.contains("on")) renderCart();
+}
+function bumpBag(){ const b = $("bagBtn"); b.classList.remove("bump"); void b.offsetWidth; b.classList.add("bump"); }
+function flyToBag(el, p){
+  const r = el.getBoundingClientRect(), t = $("bagBtn").getBoundingClientRect(), f = document.createElement("div");
+  f.className = "flyer"; f.style.setProperty("--a", ARTS[p.id - 1]);
+  Object.assign(f.style, { left: r.left + "px", top: r.top + "px", width: r.width + "px", height: r.height + "px" });
+  document.body.appendChild(f);
+  const dx = t.left + t.width / 2 - (r.left + r.width / 2), dy = t.top + t.height / 2 - (r.top + r.height / 2), s = 26 / r.width;
+  f.animate([{ transform: "none", opacity: 1, borderRadius: "16px" }, { transform: `translate(${dx * .55}px,${dy * .35 - 60}px) scale(${Math.max(s * 3, .35)}) rotate(-12deg)`, opacity: 1, offset: .55 },
+    { transform: `translate(${dx}px,${dy}px) scale(${s}) rotate(-20deg)`, opacity: .6, borderRadius: "50%" }], { duration: 650, easing: "cubic-bezier(.5,0,.3,1)" })
+    .finished.then(() => { f.remove(); updBag(); bumpBag(); sparkle(t.left + t.width / 2, t.top + t.height / 2, 14); });
+}
+function renderCart(){
+  const { sub, disc, total } = totals(), left = Math.max(0, FREE - total);
+  const ups = P.filter(x => x.stock && !cart.some(l => l.p === x)).sort((a, b) => a.price - b.price).slice(0, 3);
+  $("cartBody").innerHTML = cart.length ? `<div class="free">${left ? `Add <b>${eur(left)}</b> more for <b>free delivery</b> 🛵` : `🎉 <b>Free delivery unlocked</b>`}<div class="track"><i style="width:${Math.min(100, total / FREE * 100)}%"></i></div></div>` +
+    cart.map((l, i) => `<div class="ci ${i ? "" : "first"}">${art(l.p, true)}<div><div class="n">${l.p.name}</div><div class="sub">${l.size || ""} · <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${l.color};vertical-align:-1px;border:1px solid var(--line2)"></span>${l.p.stock <= 10 ? ` · <span style="color:var(--warn)">only ${l.p.stock} left</span>` : ""}</div>
+      <div class="qty"><button data-m="${i}" aria-label="Less">−</button><span>${l.qty}</span><button data-p="${i}" aria-label="More">+</button></div></div><b class="num">${eur(l.p.price * l.qty)}</b></div>`).join("") +
+    `<div class="ci gift"><div class="art"><span style="font-size:26px">🎁</span></div><div><div class="n">Mystery gift</div><div class="sub">Waitlist perk · auto-added</div></div><span class="free-t">Free</span></div>` +
+    (ups.length ? `<div class="upsell"><div class="mono">${left ? "Complete your order" : "Often added"}</div><div class="ups">${ups.map(x => `<div class="up">${art(x, true)}<div>${x.name}<br><b class="num">${eur(x.price)}</b>${left && x.price >= left ? `<br><span class="hint">Unlocks free delivery</span>` : ""}</div><button class="add" data-up="${x.id}">+</button></div>`).join("")}</div></div>` : "")
+    : `<div class="empty"><div class="display" style="font-size:46px;color:var(--ink)">Empty bag.</div><p>The drop won’t wait long.</p></div>`;
+  $("cartFoot").innerHTML = cart.length ? `<div class="tot"><span>Subtotal</span><span class="num">${eur(sub)}</span></div>
+    ${disc ? `<div class="tot" style="color:var(--good)"><span>Full drop bundle −15%</span><span class="num">−${eur(disc)}</span></div>` : ""}
+    <div class="tot"><span>Delivery</span><span>${left ? "from €3,95" : "Free"}</span></div>
+    <div class="tot big"><span>Total</span><span class="num">${eur(total)}</span></div>
+    <button class="cta" onclick="closeCart();openCheckout()">Checkout →</button>
+    <div class="express"><button class="apple" onclick="closeCart();openCheckout(1)">Apple Pay</button><button class="ideal" onclick="closeCart();openCheckout(1)">iDEAL</button></div>`
+    : `<button class="cta dark" onclick="closeCart();go('home')">Shop the drop</button>`;
+  $("cartBody").querySelectorAll("[data-m]").forEach(b => b.onclick = () => { const l = cart[b.dataset.m]; l.qty--; if (!l.qty) cart.splice(b.dataset.m, 1); updBag(); renderCart(); });
+  $("cartBody").querySelectorAll("[data-p]").forEach(b => b.onclick = () => { const l = cart[b.dataset.p]; if (l.qty >= l.p.stock) return toast(`Only ${l.p.stock} left`); l.qty++; updBag(); renderCart(); });
+  $("cartBody").querySelectorAll("[data-up]").forEach(b => b.onclick = () => { const x = P[b.dataset.up - 1]; addToCart(x, firstSize(x), x.colors[0], 1, null, true); toast(`Added ${x.name}`); });
+}
+function openCart(){ renderCart(); $("scrim").classList.add("on"); $("drawer").classList.add("on"); }
+function closeCart(){ $("scrim").classList.remove("on"); $("drawer").classList.remove("on"); }
+
+/* ---------- checkout ---------- */
+const DAYS = ["Today", "Tomorrow", "Sun 11 Oct"];
+const SLOTS = [[0, "18:00–21:00", 2], [1, "12:00–15:00", 6], [1, "15:00–18:00", 0], [1, "18:00–21:00", 3], [2, "12:00–15:00", 8], [2, "18:00–21:00", 9]];
+let co = { slot: 0, pay: "ideal", zone: null };
+function openCheckout(){
+  if (!cart.length) return;
+  const savedPc = (() => { try { return localStorage.getItem("d01-pc"); } catch { return null; } })() || "9742 BD";
+  $("v-checkout").innerHTML = `<button class="back" onclick="go('home')"><svg class="ic" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>Keep shopping</button>
+  <div class="co"><div class="mono">🔒 Secure checkout · ~40 seconds</div><h1 class="display">Almost yours.</h1>
+    <button class="sumtoggle" id="sumT"><span>Show order · ${cart.reduce((s, l) => s + l.qty, 0)} items + gift</span><span class="num" id="sumTop"></span></button>
+    <div class="card summary" id="sum" hidden style="margin-top:8px"></div>
+    <div class="exp-h">Express checkout</div>
+    <div class="express" style="margin-top:0"><button class="apple" onclick="paid()">Apple Pay</button><button class="ideal" onclick="paid()">iDEAL</button></div>
+    <div class="exp-h">or fill in</div>
+    <div class="box card" id="b1"><h3><em>1</em>Your details<span class="chk">✓</span></h3><div class="fgrid">
+      <div><label class="f">Email — for your receipt</label><input class="field" type="email" id="em" placeholder="you@example.com" autocomplete="email"></div>
+      <div><label class="f">Phone — so the courier can reach you</label><input class="field" type="tel" id="ph" placeholder="+31 6 …" autocomplete="tel"></div></div></div>
+    <div class="box card" id="b2"><h3><em>2</em>Where to?<span class="chk">✓</span></h3><div class="fgrid two">
+      <div><label class="f">Postcode</label><input class="field" id="coPc" value="${savedPc}" autocomplete="postal-code"></div><div><label class="f">House no.</label><input class="field" id="coNo" placeholder="22" inputmode="numeric"></div></div>
+      <div class="addr" id="coAddr"></div></div>
+    <div class="box card valid" id="b3"><h3><em>3</em>When?<span class="chk">✓</span></h3><div id="slots"></div></div>
+    <div class="box card valid" id="b4"><h3><em>4</em>Pay<span class="chk">✓</span></h3><div class="pays" id="pays">
+      ${[["ideal", "iDEAL", "iDEAL", "Most popular · pick your bank next"], ["card", "Card / Apple Pay", "VISA", "Visa, Mastercard, Apple Pay"], ["tikkie", "Tikkie", "TIKKIE", "We send a payment link via WhatsApp"]]
+        .map(([k, n, lg, s]) => `<button class="pay" data-k="${k}" aria-pressed="${k === co.pay}"><span class="lg">${lg}</span><span><b style="display:block;font-size:14px">${n}</b><span class="sub" style="font-size:12px">${s}</span></span><span class="rd"></span></button>`).join("")}</div></div>
+    <button class="cta" style="margin-top:16px" id="payBtn"></button>
+    <div class="secure"><span>🔒 SSL secured</span><span>↩︎ 14-day returns</span><span>🛵 Local delivery</span></div>
+    <label class="legal" style="display:flex;gap:8px;align-items:center"><input type="checkbox"> Tell me about Drop 02 first (optional)</label>
+    <p class="legal">By paying you agree to the terms. 14-day right of withdrawal. We only use your phone for this delivery.</p>
+  </div>`;
+  go("checkout");
+  $("sumT").onclick = () => { $("sum").hidden = !$("sum").hidden; };
+  const validate = () => {
+    $("b1").classList.toggle("valid", /\S+@\S+\.\S+/.test($("em").value) && $("ph").value.replace(/\D/g, "").length >= 9);
+    $("b2").classList.toggle("valid", !!co.zone && $("coNo").value.trim().length > 0);
+  };
+  const addr = () => { const z = zoneFor($("coPc").value); co.zone = z;
+    $("coAddr").innerHTML = z ? `<span style="color:var(--good)">✓</span> ${$("coNo").value ? "Zonnelaan " + $("coNo").value + ", " : ""}${$("coPc").value} · <b>${z.name}</b>` : `<span style="color:var(--bad)">✕</span> We don’t deliver to this postcode yet`;
+    renderSum(); validate(); };
+  ["em", "ph"].forEach(id => $(id).oninput = validate);
+  $("coPc").oninput = $("coNo").oninput = addr;
+  const renderSlots = () => { $("slots").innerHTML = DAYS.map((d, di) => `<div class="mono" style="margin:${di ? 14 : 0}px 0 8px">${d}</div><div class="slots">${SLOTS.map((s, i) => [s, i]).filter(([s]) => s[0] === di).map(([s, i]) =>
+      `<button class="slot" data-i="${i}" ${s[2] ? "" : "disabled"} aria-pressed="${i === co.slot}"><b>${s[1]}</b><span class="${s[2] && s[2] <= 2 ? "left" : ""}">${s[2] ? (s[2] <= 2 ? `⚡ Only ${s[2]} spots left` : `${s[2]} spots`) : "Full"}</span></button>`).join("")}</div>`).join("");
+    $("slots").querySelectorAll(".slot").forEach(b => b.onclick = () => { co.slot = +b.dataset.i; renderSlots(); renderSum(); }); };
+  $("pays").querySelectorAll(".pay").forEach(b => b.onclick = () => { co.pay = b.dataset.k; $("pays").querySelectorAll(".pay").forEach(x => x.setAttribute("aria-pressed", x === b)); renderSum(); });
+  const renderSum = () => { const { sub, disc, total } = totals(), fee = !co.zone || total >= FREE ? 0 : co.zone.fee, tot = total + fee;
+    $("sum").innerHTML = `${cart.map(l => `<div class="row"><span>${l.qty}× ${l.p.name}${l.size && l.size !== "One size" ? " · " + l.size : ""}</span><span class="num">${eur(l.p.price * l.qty)}</span></div>`).join("")}
+      <div class="row"><span>🎁 Mystery gift</span><span style="color:var(--good)">Free</span></div>
+      ${disc ? `<div class="row" style="color:var(--good)"><span>Bundle −15%</span><span class="num">−${eur(disc)}</span></div>` : ""}
+      <div class="row"><span>Delivery · ${DAYS[SLOTS[co.slot][0]]} ${SLOTS[co.slot][1]}</span><span>${fee ? eur(fee) : "Free"}</span></div>
+      <div class="row t"><span>Total <span class="sub" style="font-weight:500">incl. ${eur(tot - tot / 1.21)} BTW</span></span><span class="num">${eur(tot)}</span></div>`;
+    $("sumTop").textContent = eur(tot);
+    $("payBtn").textContent = (co.pay === "tikkie" ? "Send me a Tikkie · " : co.pay === "card" ? "Pay securely · " : "Pay with iDEAL · ") + eur(tot);
+    $("payBtn").disabled = !co.zone; };
+  renderSlots(); addr();
+  $("payBtn").onclick = () => {
+    if (!$("b1").classList.contains("valid") || !$("b2").classList.contains("valid")) {
+      const bad = !$("b1").classList.contains("valid") ? $("b1") : $("b2"); bad.scrollIntoView({ behavior: "smooth", block: "center" });
+      bad.animate([{ transform: "translateX(0)" }, { transform: "translateX(-6px)" }, { transform: "translateX(6px)" }, { transform: "translateX(0)" }], { duration: 300 }); toast("Just one more detail"); return; }
+    $("payBtn").textContent = "Opening your bank…"; setTimeout(paid, 900); };
+}
+
+/* ---------- order placed ---------- */
+function paid(){
+  const s = SLOTS[co.slot], first = cart.map(l => l.p.name).join(", ");
+  cart = []; updBag();
+  $("v-ok").innerHTML = `<div class="ok"><div class="tick"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+    <div class="mono">Order #1062 · confirmed</div><h1 class="display holo-t">It’s yours.</h1>
+    <p class="sub" style="font-size:15px;line-height:1.5;max-width:32ch;margin:0 auto">Confirmation sent to WhatsApp and email. We’ll ping you when the courier is 10 minutes away.</p></div>
+    <div class="card track-st">
+      <div class="tst on"><div class="d">✓</div><div><b>Order placed</b><span>Just now · ${first} + 🎁</span></div></div>
+      <div class="tst on"><div class="d">✓</div><div><b>Paid</b><span>${co.pay === "tikkie" ? "Tikkie link sent — pay within 30 min" : "Payment received"}</span></div></div>
+      <div class="tst cur"><div class="d"></div><div><b>Packing</b><span>We’re getting it ready</span></div></div>
+      <div class="tst"><div class="d"></div><div><b>On the way</b><span>${DAYS[s[0]]} ${s[1]}</span></div></div>
+      <div class="tst"><div class="d"></div><div><b>Delivered</b><span>${co.zone ? co.zone.name : "Groningen"}</span></div></div>
+    </div>
+    <div class="card refer"><h3>Give €5, get €5</h3><p class="sub" style="margin:0">Send this code to a friend in Groningen — you both get €5 off.</p><div class="code">LOTTE-D01</div><br><button class="btn" onclick="toast('Opening WhatsApp…')">Share on WhatsApp</button></div>
+    <div style="display:grid;gap:8px;margin:14px 16px 0"><button class="cta dark" onclick="toast('Added to calendar')">Add delivery to calendar</button><button class="btn ghost" style="padding:15px" onclick="go('home')">Back to the drop</button></div>`;
+  go("ok"); vib([20, 40, 60]); confetti();
+}
+
+/* ---------- particles ---------- */
+const fx = $("fx"), cx = fx.getContext("2d"); let parts = [], running = false;
+const COLS = ["#FFB3D9", "#FFE7A3", "#B8FFD9", "#A8DCFF", "#D4B8FF", "#F3F1EC"];
+function sizeFx(){ const k = Math.min(devicePixelRatio || 1, 2); fx.width = innerWidth * k; fx.height = innerHeight * k; cx.setTransform(k, 0, 0, k, 0, 0); }
+sizeFx(); addEventListener("resize", sizeFx);
+function loopFx(){ cx.clearRect(0, 0, innerWidth, innerHeight);
+  parts = parts.filter(p => p.l < p.m);
+  for (const p of parts) { p.l++; p.vy += p.g; p.vx *= .985; p.x += p.vx; p.y += p.vy; p.r += p.vr;
+    cx.save(); cx.globalAlpha = 1 - p.l / p.m; cx.translate(p.x, p.y); cx.rotate(p.r); cx.fillStyle = p.c;
+    if (p.star) { cx.beginPath(); cx.arc(0, 0, p.s, 0, 6.283); cx.fill(); } else cx.fillRect(-p.s, -p.s * .45, p.s * 2, p.s * .9); cx.restore(); }
+  if (parts.length) requestAnimationFrame(loopFx); else running = false; }
+function kick(){ if (!running) { running = true; requestAnimationFrame(loopFx); } }
+function sparkle(x, y, n){ for (let i = 0; i < n; i++) { const a = Math.random() * 6.283, v = 1.5 + Math.random() * 3; parts.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, g: .05, s: 1.5 + Math.random() * 1.8, c: COLS[i % 6], l: 0, m: 30 + Math.random() * 20, r: 0, vr: 0, star: 1 }); } kick(); }
+function confetti(){ for (let i = 0; i < 150; i++) { const side = i % 2, a = -1.35 + Math.random() * .75, v = 9 + Math.random() * 9;
+  parts.push({ x: side ? innerWidth + 10 : -10, y: innerHeight * .78, vx: Math.cos(a) * v * (side ? -1 : 1), vy: Math.sin(a) * v, g: .22, s: 4 + Math.random() * 4, c: COLS[i % 6], l: 0, m: 110 + Math.random() * 50, r: Math.random() * 6, vr: (Math.random() - .5) * .3 }); }
+  kick(); }
+
+/* ---------- live activity (in the real shop this reads real orders) ---------- */
+const ACT = [["Paddepoel", 3], ["Centrum", 1], ["Helpman", 2], ["De Hoogte", 1], ["Selwerd", 6], ["Oosterpoort", 3]];
+let actI = 0;
+function proof(){
+  if (view !== "home" || $("drawer").classList.contains("on")) return;
+  const [z, id] = ACT[actI++ % ACT.length], p = P[id - 1], m = 2 + (actI * 3) % 9;
+  $("proof").innerHTML = `<i style="--a:${ARTS[id - 1]}"></i><span>Someone in <b>${z}</b> got <b>${p.name}</b> · ${m} min ago</span>`;
+  $("proof").classList.add("on"); setTimeout(() => $("proof").classList.remove("on"), 3800);
+}
+setTimeout(proof, 6000); setInterval(proof, 15000);
+
+/* ---------- foil follows the scroll ---------- */
+let sxPending = false;
+addEventListener("scroll", () => { if (sxPending) return; sxPending = true; requestAnimationFrame(() => { document.documentElement.style.setProperty("--sx", (50 + Math.sin(scrollY / 260) * 45).toFixed(1)); sxPending = false; }); }, { passive: true });
+
+/* ---------- boot ---------- */
+$("leftAll").textContent = P.reduce((s, p) => s + p.stock, 0);
+try { const pc = localStorage.getItem("d01-pc"); if (pc) { $("pcIn").value = pc; checkPc(); $("pcRes").hidden = true; } } catch {}
+renderFan(); renderGrid(); renderBundle(); tick(); tickPromise(); updBag();
+setInterval(tick, 1000); setInterval(tickPromise, 30000);
+</script>
+</body>
+</html>

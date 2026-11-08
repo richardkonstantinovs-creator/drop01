@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# Runs PHP 8.2 from the local Docker image (the dev machine has no PHP), with the repo mounted at /repo.
+exec docker run --rm -i -v "$(cd "$(dirname "$0")/.." && pwd)":/repo -w /repo drop01-php php "$@"

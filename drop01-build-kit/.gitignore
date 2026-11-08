@@ -1,0 +1,8 @@
+dist/
+tools/cache/
+tools/e2e/node_modules/
+tools/e2e/shots/
+tools/e2e/fixture.png
+src/data/
+src/uploads/products/
+.DS_Store
